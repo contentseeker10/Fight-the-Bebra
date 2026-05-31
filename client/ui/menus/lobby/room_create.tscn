@@ -17,6 +17,19 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0.08627451, 0.1764706, 1)
 
+[node name="Label" type="Label" parent="." unique_id=1040690869]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -62.0
+offset_top = 16.0
+offset_right = 62.0
+offset_bottom = 36.0
+grow_horizontal = 2
+text = "Fight the Bebra"
+horizontal_alignment = 1
+
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=365656404]
 layout_mode = 1
 anchors_preset = 15
@@ -28,74 +41,50 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=422656158]
 layout_mode = 2
 
-[node name="RoomName" type="LineEdit" parent="CenterContainer/VBoxContainer" unique_id=1622063283]
+[node name="RoomName2" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1836468610]
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 20
-text = "New room"
-alignment = 1
+text = "Room score record: 0"
 
-[node name="Button" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1191538412]
+[node name="RoomName" type="Label" parent="CenterContainer/VBoxContainer" unique_id=98854731]
 layout_mode = 2
-text = "Start"
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "XXXXX"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=1971566567]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/VBoxContainer2" unique_id=1191538412]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Start game"
+
+[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer/VBoxContainer2" unique_id=777512427]
+layout_mode = 2
+text = "Exit room"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=29696737]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=142814220]
+[node name="PlayerCount" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=142814220]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Players 1/2"
+text = "Players 2/2"
 horizontal_alignment = 1
 
-[node name="UsernameAdmin" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=1498081452]
+[node name="AdminUsername" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=1498081452]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.87898356, 0.8789831, 0, 1)
 theme_override_font_sizes/font_size = 10
 text = "username1"
 horizontal_alignment = 1
 
-[node name="UsernamePlayer" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=441594199]
+[node name="PlayerUsername" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=441594199]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.81969726, 3.85046e-07, 1)
 theme_override_font_sizes/font_size = 10
 text = "username2"
 horizontal_alignment = 1
-
-[node name="Username" type="Label" parent="." unique_id=1040690869]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -45.0
-offset_top = 16.0
-offset_right = 45.0
-offset_bottom = 36.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.87898356, 0.8789831, 0, 1)
-text = "username"
-horizontal_alignment = 1
-
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=276250213]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 8
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1385292692]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="RecordScore" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1052062243]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "record score: 0"
-
-[node name="DeathCount" type="Label" parent="MarginContainer/VBoxContainer" unique_id=188034789]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.30418426, 0.24058121, 1)
-theme_override_font_sizes/font_size = 12
-text = "death count: 0"
