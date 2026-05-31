@@ -1,0 +1,47 @@
+[gd_resource type="Theme" format=3 uid="uid://bho4hh60fkqok"]
+
+[ext_resource type="FontFile" uid="uid://bii0oduqgvaqx" path="res://assets/fonts/PixelifySans-VariableFont_wght.ttf" id="1_5x3i2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wl1kw"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.08790589, 0.14180788, 0.39783254, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lu33j"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.14959547, 0.22423661, 0.5855685, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5x3i2"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(3.008172e-08, 0.045055233, 0.10893514, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wycmq"]
+bg_color = Color(1, 1, 1, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x2pqw"]
+bg_color = Color(0.8524816, 0.116221525, 0.14790884, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+
+[resource]
+default_font = ExtResource("1_5x3i2")
+Button/font_sizes/font_size = 12
+Button/fonts/font = ExtResource("1_5x3i2")
+Button/styles/hover = SubResource("StyleBoxFlat_wl1kw")
+Button/styles/normal = SubResource("StyleBoxFlat_lu33j")
+Button/styles/pressed = SubResource("StyleBoxFlat_5x3i2")
+Label/fonts/font = ExtResource("1_5x3i2")
+LineEdit/fonts/font = ExtResource("1_5x3i2")
+ProgressBar/fonts/font = ExtResource("1_5x3i2")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_wycmq")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_x2pqw")
+TextEdit/fonts/font = ExtResource("1_5x3i2")
+VBoxContainer/constants/separation = 12
