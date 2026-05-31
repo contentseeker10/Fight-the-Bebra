@@ -22,6 +22,11 @@ window/size/mode=2
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[gui]
+
+theme/custom="uid://bho4hh60fkqok"
+theme/custom_font="uid://bii0oduqgvaqx"
+
 [input]
 
 move_up={

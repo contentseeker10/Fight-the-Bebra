@@ -17,6 +17,10 @@ content_margin_top = 4.0
 content_margin_bottom = 4.0
 bg_color = Color(3.008172e-08, 0.045055233, 0.10893514, 1)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5x3i2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wl1kw"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wycmq"]
 bg_color = Color(1, 1, 1, 0)
 border_width_left = 4
@@ -39,7 +43,10 @@ Button/styles/hover = SubResource("StyleBoxFlat_wl1kw")
 Button/styles/normal = SubResource("StyleBoxFlat_lu33j")
 Button/styles/pressed = SubResource("StyleBoxFlat_5x3i2")
 Label/fonts/font = ExtResource("1_5x3i2")
+LineEdit/constants/minimum_character_width = 10
 LineEdit/fonts/font = ExtResource("1_5x3i2")
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_5x3i2")
+LineEdit/styles/normal = SubResource("StyleBoxEmpty_wl1kw")
 ProgressBar/fonts/font = ExtResource("1_5x3i2")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_wycmq")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_x2pqw")

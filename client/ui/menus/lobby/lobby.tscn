@@ -1,7 +1,5 @@
 [gd_scene format=3 uid="uid://d2mfdjtg45rr"]
 
-[ext_resource type="Theme" uid="uid://bho4hh60fkqok" path="res://assets/theme.tres" id="1_owkph"]
-
 [node name="Lobby" type="Control" unique_id=696315945]
 layout_mode = 3
 anchors_preset = 15
@@ -29,20 +27,52 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1506398095]
 layout_mode = 2
-theme = ExtResource("1_owkph")
 
 [node name="Label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=684482620]
 layout_mode = 2
-theme = ExtResource("1_owkph")
 theme_override_font_sizes/font_size = 20
 text = "Fight the Bebra"
 
 [node name="Button" type="Button" parent="CenterContainer/VBoxContainer" unique_id=390184046]
 layout_mode = 2
-theme = ExtResource("1_owkph")
 text = "Create room"
 
 [node name="Button2" type="Button" parent="CenterContainer/VBoxContainer" unique_id=652173332]
 layout_mode = 2
-theme = ExtResource("1_owkph")
 text = "Join room"
+
+[node name="Username" type="Label" parent="." unique_id=1312243461]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -45.0
+offset_top = 16.0
+offset_right = 45.0
+offset_bottom = 36.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.87898356, 0.8789831, 0, 1)
+text = "username"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=817652385]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=695772972]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="RecordScore" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1512603638]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "record score: 0"
+
+[node name="DeathCount" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1513160331]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.30418426, 0.24058121, 1)
+theme_override_font_sizes/font_size = 12
+text = "death count: 0"
