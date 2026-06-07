@@ -33,11 +33,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Fight the Bebra"
 
-[node name="Button" type="Button" parent="CenterContainer/VBoxContainer" unique_id=390184046]
+[node name="CreateRoomButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=390184046]
 layout_mode = 2
 text = "Create room"
 
-[node name="Button2" type="Button" parent="CenterContainer/VBoxContainer" unique_id=652173332]
+[node name="JoinRoomButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=652173332]
 layout_mode = 2
 text = "Join room"
 

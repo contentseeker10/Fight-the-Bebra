@@ -41,7 +41,7 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=422656158]
 layout_mode = 2
 
-[node name="RoomName2" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1836468610]
+[node name="RoomScore" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1836468610]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Room score record: 0"
