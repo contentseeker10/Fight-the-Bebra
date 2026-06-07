@@ -34,17 +34,16 @@ border_color = Color(1, 1, 1, 0.19607843)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wycmq"]
 bg_color = Color(1, 1, 1, 0)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x2pqw"]
 bg_color = Color(0.8524816, 0.116221525, 0.14790884, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
 
 [resource]
 default_font = ExtResource("1_5x3i2")
@@ -58,6 +57,7 @@ LineEdit/constants/minimum_character_width = 10
 LineEdit/fonts/font = ExtResource("1_5x3i2")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_e8htd")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_wms38")
+ProgressBar/font_sizes/font_size = 8
 ProgressBar/fonts/font = ExtResource("1_5x3i2")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_wycmq")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_x2pqw")

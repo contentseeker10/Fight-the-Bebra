@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://bp0at5f34iayj"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ts8fk"]
+bg_color = Color(0.38637522, 0.3495529, 0.9619189, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+
+[node name="Hud" type="CanvasLayer" unique_id=1493100050]
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=11002105]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1759387263]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="PlayerInfoContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1024250079]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 4
+
+[node name="Username" type="Label" parent="MarginContainer/VBoxContainer/PlayerInfoContainer" unique_id=332510563]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 12
+text = "player"
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/PlayerInfoContainer" unique_id=2144679840]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+value = 50.0
+
+[node name="TeammateInfoContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1522594176]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Username" type="Label" parent="MarginContainer/VBoxContainer/TeammateInfoContainer" unique_id=724450941]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "teammate"
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/TeammateInfoContainer" unique_id=1814118559]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 6
+theme_override_styles/fill = SubResource("StyleBoxFlat_ts8fk")
+value = 50.0
+
+[node name="Score" type="Label" parent="MarginContainer" unique_id=2108815282]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "1000"
+
+[node name="Label" type="Label" parent="MarginContainer" unique_id=426535776]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Level X"
+horizontal_alignment = 1
