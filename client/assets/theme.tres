@@ -32,6 +32,13 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(1, 1, 1, 0.19607843)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcf2e"]
+bg_color = Color(0, 0, 0, 0.39215687)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_color = Color(1, 1, 1, 0.19607843)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wycmq"]
 bg_color = Color(1, 1, 1, 0)
 border_width_left = 1
@@ -45,6 +52,13 @@ border_width_left = 1
 border_width_top = 1
 border_width_bottom = 1
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7g2p0"]
+bg_color = Color(0.46483666, 0.73152643, 0.9999971, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_357y2"]
+content_margin_left = 6.0
+bg_color = Color(0.19607843, 0.26666668, 0.3372549, 1)
+
 [resource]
 default_font = ExtResource("1_5x3i2")
 Button/font_sizes/font_size = 12
@@ -57,9 +71,12 @@ LineEdit/constants/minimum_character_width = 10
 LineEdit/fonts/font = ExtResource("1_5x3i2")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_e8htd")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_wms38")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_bcf2e")
 ProgressBar/font_sizes/font_size = 8
 ProgressBar/fonts/font = ExtResource("1_5x3i2")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_wycmq")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_x2pqw")
 TextEdit/fonts/font = ExtResource("1_5x3i2")
 VBoxContainer/constants/separation = 12
+VScrollBar/styles/grabber = SubResource("StyleBoxFlat_7g2p0")
+VScrollBar/styles/scroll = SubResource("StyleBoxFlat_357y2")
