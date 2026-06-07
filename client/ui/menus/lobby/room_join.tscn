@@ -54,3 +54,21 @@ text = "Join"
 [node name="ReturnButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=328553949]
 layout_mode = 2
 text = "Return"
+
+[node name="ValidationLabel" type="Label" parent="." unique_id=1296522984]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -34.5
+offset_top = -67.5
+offset_right = 34.5
+offset_bottom = -56.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.8226441, 0, 0.083949365, 1)
+theme_override_font_sizes/font_size = 8
+text = "Something wrong!"
+horizontal_alignment = 1
