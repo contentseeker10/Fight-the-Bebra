@@ -1,0 +1,179 @@
+[gd_scene format=3 uid="uid://bbylmanpqnhc3"]
+
+[node name="NextLevel" type="CanvasLayer" unique_id=1008776919]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=822364878]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=916322719]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -161.0
+offset_top = -73.5
+offset_right = 161.0
+offset_bottom = 73.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 128
+
+[node name="AdminPlayerInfoContainer" type="CenterContainer" parent="HBoxContainer" unique_id=415630239]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AdminPlayerInfoContainer" unique_id=531586784]
+layout_mode = 2
+
+[node name="Username" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer" unique_id=379828832]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "player"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer" unique_id=1006475585]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer/VBoxContainer" unique_id=2113796728]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Score:"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer/VBoxContainer" unique_id=540253110]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "500"
+horizontal_alignment = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer" unique_id=1834502694]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer/VBoxContainer2" unique_id=1699241078]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Killed bebras:"
+horizontal_alignment = 1
+
+[node name="KillCount" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer/VBoxContainer2" unique_id=892029161]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "10"
+horizontal_alignment = 1
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer" unique_id=371713379]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer/VBoxContainer3" unique_id=2037407006]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Death count:"
+
+[node name="DeathCount" type="Label" parent="HBoxContainer/AdminPlayerInfoContainer/VBoxContainer/VBoxContainer3" unique_id=896989141]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "1"
+horizontal_alignment = 1
+
+[node name="LevelInfoContainer" type="CenterContainer" parent="HBoxContainer" unique_id=1673490981]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/LevelInfoContainer" unique_id=637381032]
+layout_mode = 2
+
+[node name="CurrentLevelLabel" type="Label" parent="HBoxContainer/LevelInfoContainer/VBoxContainer" unique_id=1285839693]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Level X"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/LevelInfoContainer/VBoxContainer" unique_id=1018638267]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/LevelInfoContainer/VBoxContainer/VBoxContainer" unique_id=1954371361]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Total score:"
+horizontal_alignment = 1
+
+[node name="TotalScoreLabel" type="Label" parent="HBoxContainer/LevelInfoContainer/VBoxContainer/VBoxContainer" unique_id=1298490665]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "1000"
+horizontal_alignment = 1
+
+[node name="NextButton" type="Button" parent="HBoxContainer/LevelInfoContainer/VBoxContainer" unique_id=1266910285]
+layout_mode = 2
+text = "Next"
+
+[node name="LeaveButton" type="Button" parent="HBoxContainer/LevelInfoContainer/VBoxContainer" unique_id=1922139794]
+layout_mode = 2
+text = "Leave"
+
+[node name="UserPlayerInfoContainer" type="CenterContainer" parent="HBoxContainer" unique_id=171257921]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/UserPlayerInfoContainer" unique_id=289756356]
+layout_mode = 2
+
+[node name="Username" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer" unique_id=2063732493]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "player"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer" unique_id=1433325996]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer/VBoxContainer" unique_id=682344344]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Score:"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer/VBoxContainer" unique_id=427650298]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "500"
+horizontal_alignment = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer" unique_id=698147279]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer/VBoxContainer2" unique_id=1357488684]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Killed bebras:"
+horizontal_alignment = 1
+
+[node name="KillCount" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer/VBoxContainer2" unique_id=1813175395]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "10"
+horizontal_alignment = 1
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer" unique_id=780542847]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer/VBoxContainer3" unique_id=848730256]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Death count:"
+
+[node name="DeathCount" type="Label" parent="HBoxContainer/UserPlayerInfoContainer/VBoxContainer/VBoxContainer3" unique_id=209616385]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "1"
+horizontal_alignment = 1

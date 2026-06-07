@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://2y1mmjrcwmla"]
+
+[node name="Death" type="CanvasLayer" unique_id=1957036158]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1033496129]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.39215687)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1548796254]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=309099304]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1834458184]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "You died"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="CenterContainer/VBoxContainer" unique_id=2032779114]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "If your teammate don't die, you'll respawn in"
+
+[node name="TimerLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1615045298]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "10"
+horizontal_alignment = 1

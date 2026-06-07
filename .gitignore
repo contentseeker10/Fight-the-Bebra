@@ -59,3 +59,11 @@ bin/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Antigravity agent-specific
+
+.agents/
+
+# Other
+
+*.pdf
