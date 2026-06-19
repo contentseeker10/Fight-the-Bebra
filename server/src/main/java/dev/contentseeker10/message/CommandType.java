@@ -2,7 +2,10 @@ package dev.contentseeker10.message;
 
 public enum CommandType {
     UNKNOWN(-1),
-    RESPONSE(0);
+    RESPONSE(0),
+
+    REGISTER(1),
+    LOGIN(2);
 
     // TODO: Add different command types
 
@@ -21,7 +24,8 @@ public enum CommandType {
         return switch (code) {
             case 0 -> RESPONSE;
 
-            // ...
+            case 1 -> REGISTER;
+            case 2 -> LOGIN;
 
             default -> UNKNOWN;
         };

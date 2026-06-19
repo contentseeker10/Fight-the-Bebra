@@ -1,6 +1,8 @@
 package dev.contentseeker10.services;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import dev.contentseeker10.dto.*;
+import dev.contentseeker10.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,52 +17,61 @@ public class AuthorizationService {
 
     private static final DatabaseService db = DatabaseService.getInstance();
 
-    public String register(String username, String password) {
-        if (!validateUsername(username)) {
-            return "Username validation error";
-        } else if (!validatePassword(password)) {
-            return "Password validation error";
+    public RegisterResponseDTO register(RegisterRequestDTO request) {
+        if (!validateUsername(request.username())) {
+            return new RegisterResponseDTO(false, "Username Validation Error");
+        } else if (!validatePassword(request.password())) {
+            return new RegisterResponseDTO(false, "Password Validation Error");
         }
 
-        String passwordHash = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+        String passwordHash = BCrypt.withDefaults().hashToString(12, request.password().toCharArray());
 
         String sql = "INSERT INTO users(username, password_hash) VALUES(?, ?)";
 
         try (Connection connection = db.getConnection(); PreparedStatement pst = connection.prepareStatement(sql)) {
-            pst.setString(1, username);
+            pst.setString(1, request.username());
             pst.setString(2, passwordHash);
-            return pst.executeUpdate() > 0 ? "Success" : "Database error";
+            return pst.executeUpdate() > 0
+                    ? new RegisterResponseDTO(true, "")
+                    : new RegisterResponseDTO(false, "Database Error");
         } catch (SQLException e) {
-            return "Database error";
+            return new RegisterResponseDTO(false, "Database Error");
         }
     }
 
-    public String authorize(String username, String password) {
-        if (!validateUsername(username)) {
-            return "Username validation error";
-        } else if (!validatePassword(password)) {
-            return "Password validation error";
+    public AuthResponseDTO authorize(AuthRequestDTO request) {
+        if (!validateUsername(request.username())) {
+            return new AuthResponseDTO(false, "Username Validation Error", null);
+        } else if (!validatePassword(request.password())) {
+            return new AuthResponseDTO(false, "Password Validation Error", null);
         }
 
         String sql = "SELECT * FROM users WHERE username = ?";
 
-        String storedHash;
-
+        UserDTO user;
         try (Connection connection = db.getConnection(); PreparedStatement pst = connection.prepareStatement(sql)) {
-            pst.setString(1, username);
+            pst.setString(1, request.username());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    storedHash = rs.getString("password_hash");
+                    String storedHash = rs.getString("password_hash");
+                    BCrypt.Result result = BCrypt.verifyer().verify(request.password().toCharArray(), storedHash);
+                    if (!result.verified) {
+                        return new AuthResponseDTO(false, "Wrong Password", null);
+                    }
+                    user = new UserDTO(rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getInt("record_score"),
+                            rs.getInt("death_count")
+                            );
                 } else {
-                    return "User not found";
+                    return new AuthResponseDTO(false, "User Not Found", null);
                 }
             }
         } catch (SQLException e) {
-            return "Database error";
+            return new AuthResponseDTO(false, "Database Error", null);
         }
 
-        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), storedHash);
-        return result.verified ? "Success" : "Wrong password";
+        return new AuthResponseDTO(true, "", user);
     }
 
     private boolean validateUsername(String username) {
