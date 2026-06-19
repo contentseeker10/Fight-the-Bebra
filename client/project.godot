@@ -11,8 +11,15 @@ config_version=5
 [application]
 
 config/name="Fight-the-Bebra"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+run/main_scene="uid://wjfjisrbhj2u"
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+EventManager="*uid://dp8qkf2aw27x1"
+NetworkManager="*uid://3m1feccb8o4c"
+AudioManager="*uid://cmg70wc0afreh"
 
 [display]
 
