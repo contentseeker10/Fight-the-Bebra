@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d3d80c2mm4mdy"]
 
-[ext_resource type="Script" uid="uid://hdq4yuoge2l4" path="res://ui/menus/lobby/room_join.gd" id="1_jnh8w"]
+[ext_resource type="Script" uid="uid://hdq4yuoge2l4" path="res://ui/menus/lobby/room_join/room_join.gd" id="1_jnh8w"]
 
 [node name="RoomJoin" type="Control" unique_id=1314100204]
 layout_mode = 3

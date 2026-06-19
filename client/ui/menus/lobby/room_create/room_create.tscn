@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d01d4sq58xxh7"]
 
-[ext_resource type="Script" uid="uid://b05nqplbvtl5n" path="res://ui/menus/lobby/room_create.gd" id="1_epk8m"]
+[ext_resource type="Script" uid="uid://b05nqplbvtl5n" path="res://ui/menus/lobby/room_create/room_create.gd" id="1_epk8m"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fk4vw"]
 content_margin_left = 8.0
