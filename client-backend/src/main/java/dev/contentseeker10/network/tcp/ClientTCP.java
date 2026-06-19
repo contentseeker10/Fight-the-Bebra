@@ -11,15 +11,14 @@ import java.nio.ByteBuffer;
 
 public class ClientTCP {
 
+    private static final ClientTCP INSTANCE = new ClientTCP();
+    private ClientTCP() {}
+    public static ClientTCP getInstance() { return INSTANCE; }
+
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+
     private Socket socket;
-
-    private final String host;
-    private final int port;
-
-    public ClientTCP(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
 
     public Message sendRequest(Message request) {
         ensureConnection();
@@ -79,7 +78,7 @@ public class ClientTCP {
         while (socket == null || socket.isClosed() || !socket.isConnected()) {
             try {
                 System.out.println("[CLIENT] Attempting to connect to server...");
-                socket = new Socket(host, port);
+                socket = new Socket(HOST, PORT);
                 System.out.println("[CLIENT] Successfully connected.");
             } catch (IOException e) {
                 System.out.println("[CLIENT] Server is unavailable. Retry in " + (delay / 1000) + " seconds...");
