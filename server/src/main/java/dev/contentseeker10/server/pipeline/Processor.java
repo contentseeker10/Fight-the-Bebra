@@ -40,7 +40,7 @@ public class Processor implements Runnable {
         String response = switch (commandType) {
             case REGISTER -> processRegister(data);
             case LOGIN -> processLogin(data);
-            default -> "{'response': 'Server Error'}";
+            default -> "{'response': 'ServerTCP Error'}";
         };
 
         Payload responsePayload = new Payload(CommandType.RESPONSE.getCode(), 0, response);
