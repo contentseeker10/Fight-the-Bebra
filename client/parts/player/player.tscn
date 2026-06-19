@@ -21,6 +21,7 @@
 [ext_resource type="Script" uid="uid://boqungs2um7t1" path="res://parts/player/state_machine/idle_state.gd" id="19_jl01s"]
 [ext_resource type="Script" uid="uid://pfxje06c61es" path="res://parts/player/state_machine/running_state.gd" id="20_40i4h"]
 [ext_resource type="Script" uid="uid://c0437e16uy3e3" path="res://parts/player/state_machine/attacking_state.gd" id="21_jl01s"]
+[ext_resource type="PackedScene" uid="uid://bp0at5f34iayj" path="res://ui/menus/hud/hud.tscn" id="22_40i4h"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2skyw"]
 atlas = ExtResource("1_1w0r4")
@@ -1031,3 +1032,5 @@ script = ExtResource("20_40i4h")
 
 [node name="Attacking" type="Node" parent="StateMachine" unique_id=983043531]
 script = ExtResource("21_jl01s")
+
+[node name="Hud" parent="." unique_id=1493100050 instance=ExtResource("22_40i4h")]

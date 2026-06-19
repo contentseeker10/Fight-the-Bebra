@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://ce8sm7ubwauuc"]
 
+[ext_resource type="Script" uid="uid://crlo0l6a2v2sd" path="res://ui/menus/auth/login.gd" id="1_j4i0t"]
+
 [node name="Login" type="Control" unique_id=2115481921]
 layout_mode = 3
 anchors_preset = 15
@@ -7,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_j4i0t")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1684185173]
 layout_mode = 1
@@ -31,6 +34,7 @@ text = "Fight the Bebra"
 horizontal_alignment = 1
 
 [node name="ValidationLabel" type="Label" parent="." unique_id=1491342159]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -77,3 +81,5 @@ secret = true
 [node name="LoginButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=430474167]
 layout_mode = 2
 text = "Log in"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/LoginButton" to="." method="_on_login_button_pressed"]

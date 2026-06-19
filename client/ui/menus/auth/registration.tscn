@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://blbj6555q8pbs"]
 
+[ext_resource type="Script" uid="uid://c7aabf6kbfoh0" path="res://ui/menus/auth/registration.gd" id="1_lajlv"]
+
 [node name="Registration" type="Control" unique_id=1322977284]
 layout_mode = 3
 anchors_preset = 15
@@ -7,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_lajlv")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=201688329]
 layout_mode = 1
@@ -31,6 +34,7 @@ text = "Fight the Bebra"
 horizontal_alignment = 1
 
 [node name="ValidationLabel" type="Label" parent="." unique_id=38706643]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -77,3 +81,5 @@ secret = true
 [node name="RegisterButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1521684227]
 layout_mode = 2
 text = "Register"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/RegisterButton" to="." method="_on_register_button_pressed"]

@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://d01d4sq58xxh7"]
 
+[ext_resource type="Script" uid="uid://b05nqplbvtl5n" path="res://ui/menus/lobby/room_create.gd" id="1_epk8m"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fk4vw"]
 content_margin_left = 8.0
 bg_color = Color(0, 0.08627451, 0.1764706, 1)
@@ -16,6 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_epk8m")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1332125970]
 layout_mode = 1
@@ -175,3 +178,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 8
 theme_override_styles/normal = SubResource("StyleBoxFlat_fk4vw")
 placeholder_text = "Chat..."
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/VBoxContainer2/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/VBoxContainer2/ExitButton" to="." method="_on_exit_button_pressed"]

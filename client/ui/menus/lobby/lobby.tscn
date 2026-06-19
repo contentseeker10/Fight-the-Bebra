@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://d2mfdjtg45rr"]
 
+[ext_resource type="Script" uid="uid://cowjpavodoiev" path="res://ui/menus/lobby/lobby.gd" id="1_owkph"]
+
 [node name="Lobby" type="Control" unique_id=696315945]
 layout_mode = 3
 anchors_preset = 15
@@ -7,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_owkph")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=215544349]
 layout_mode = 1
@@ -76,3 +79,6 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.30418426, 0.24058121, 1)
 theme_override_font_sizes/font_size = 12
 text = "death count: 0"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]
