@@ -22,6 +22,9 @@
 hs_err_pid*
 replay_pid*
 
+# Databases
+*.db
+
 # Maven
 target/
 pom.xml.tag

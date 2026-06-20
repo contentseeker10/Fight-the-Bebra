@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d2mfdjtg45rr"]
 
 [ext_resource type="Script" uid="uid://cowjpavodoiev" path="res://ui/menus/lobby/lobby.gd" id="1_owkph"]
+[ext_resource type="PackedScene" uid="uid://b2uk5sr33nmne" path="res://ui/components/network_statuses/network_statuses.tscn" id="2_l5amn"]
 
 [node name="Lobby" type="Control" unique_id=696315945]
 layout_mode = 3
@@ -79,6 +80,8 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.30418426, 0.24058121, 1)
 theme_override_font_sizes/font_size = 12
 text = "death count: 0"
+
+[node name="NetworkStatuses" parent="." unique_id=603162824 instance=ExtResource("2_l5amn")]
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/CreateRoomButton" to="." method="_on_create_room_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/JoinRoomButton" to="." method="_on_join_room_button_pressed"]

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ce8sm7ubwauuc"]
 
-[ext_resource type="Script" uid="uid://crlo0l6a2v2sd" path="res://ui/menus/auth/login.gd" id="1_j4i0t"]
+[ext_resource type="Script" uid="uid://crlo0l6a2v2sd" path="res://ui/menus/auth/login/login.gd" id="1_j4i0t"]
 
 [node name="Login" type="Control" unique_id=2115481921]
 layout_mode = 3
@@ -33,7 +33,7 @@ grow_horizontal = 2
 text = "Fight the Bebra"
 horizontal_alignment = 1
 
-[node name="ValidationLabel" type="Label" parent="." unique_id=1491342159]
+[node name="ErrorLabel" type="Label" parent="." unique_id=1491342159]
 visible = false
 layout_mode = 1
 anchors_preset = 8

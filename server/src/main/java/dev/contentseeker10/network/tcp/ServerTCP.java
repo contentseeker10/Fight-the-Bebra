@@ -21,6 +21,7 @@ public class ServerTCP implements Runnable {
         try (serverSocket) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                System.out.println("[SERVER] Client " + clientSocket.getInetAddress() + " connected");
                 synchronized (clientSockets) {
                     clientSockets.add(clientSocket);
                 }

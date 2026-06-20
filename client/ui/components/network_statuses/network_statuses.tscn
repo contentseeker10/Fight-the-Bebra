@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://b2uk5sr33nmne"]
+
+[ext_resource type="Script" uid="uid://r8kdw0has5iq" path="res://ui/components/network_statuses/network_statuses.gd" id="1_aqdxg"]
+
+[node name="NetworkStatuses" type="CanvasLayer" unique_id=603162824]
+script = ExtResource("1_aqdxg")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=603170583]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -155.0
+offset_top = -13.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="BridgeStatus" type="Label" parent="HBoxContainer" unique_id=1500980895]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Bridge Status: "
+
+[node name="ServerStatus" type="Label" parent="HBoxContainer" unique_id=825706678]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Server Status: "

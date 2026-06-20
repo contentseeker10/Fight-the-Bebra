@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://blbj6555q8pbs"]
 
-[ext_resource type="Script" uid="uid://c7aabf6kbfoh0" path="res://ui/menus/auth/registration.gd" id="1_lajlv"]
+[ext_resource type="Script" uid="uid://c7aabf6kbfoh0" path="res://ui/menus/auth/registration/registration.gd" id="1_lajlv"]
+[ext_resource type="PackedScene" uid="uid://b2uk5sr33nmne" path="res://ui/components/network_statuses/network_statuses.tscn" id="2_nf3j2"]
 
 [node name="Registration" type="Control" unique_id=1322977284]
 layout_mode = 3
@@ -33,7 +34,7 @@ grow_horizontal = 2
 text = "Fight the Bebra"
 horizontal_alignment = 1
 
-[node name="ValidationLabel" type="Label" parent="." unique_id=38706643]
+[node name="ErrorLabel" type="Label" parent="." unique_id=38706643]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -81,5 +82,7 @@ secret = true
 [node name="RegisterButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1521684227]
 layout_mode = 2
 text = "Register"
+
+[node name="NetworkStatuses" parent="." unique_id=603162824 instance=ExtResource("2_nf3j2")]
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/RegisterButton" to="." method="_on_register_button_pressed"]

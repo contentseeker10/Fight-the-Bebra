@@ -34,6 +34,8 @@ public class BridgeTCP implements Runnable {
                      BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
                      OutputStream os = gameSocket.getOutputStream()) {
 
+                    System.out.println("[BRIDGE] Game Client connected");
+
                     String json;
                     while ((json = reader.readLine()) != null) {
                         JsonNode root = mapper.readTree(json);
@@ -54,10 +56,8 @@ public class BridgeTCP implements Runnable {
                 } catch (IOException e) {
                     System.err.println("[BRIDGE] Game client disconnected: " + e.getMessage());
                     client.closeSocket();
-                    break;
                 }
             }
-            Thread.currentThread().interrupt();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

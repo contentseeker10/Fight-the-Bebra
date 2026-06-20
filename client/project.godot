@@ -20,11 +20,13 @@ config/icon="res://icon.svg"
 EventManager="*uid://dp8qkf2aw27x1"
 NetworkManager="*uid://3m1feccb8o4c"
 AudioManager="*uid://cmg70wc0afreh"
+AccountManager="*uid://bnbmnm34otxe5"
 
 [display]
 
 window/size/viewport_width=640
 window/size/viewport_height=360
+window/size/mode=2
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 

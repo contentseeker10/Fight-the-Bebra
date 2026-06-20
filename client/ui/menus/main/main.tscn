@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://wjfjisrbhj2u"]
 
 [ext_resource type="Script" uid="uid://cwgywn48xisu5" path="res://ui/menus/main/main.gd" id="1_t10ww"]
+[ext_resource type="PackedScene" uid="uid://b2uk5sr33nmne" path="res://ui/components/network_statuses/network_statuses.tscn" id="2_kqqty"]
 
 [node name="Main" type="Control" unique_id=1390531196]
 layout_mode = 3
@@ -43,6 +44,8 @@ text = "Log in"
 [node name="RegisterButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2114623860]
 layout_mode = 2
 text = "Register"
+
+[node name="NetworkStatuses" parent="." unique_id=1162159284 instance=ExtResource("2_kqqty")]
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/LoginButton" to="." method="_on_login_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/RegisterButton" to="." method="_on_register_button_pressed"]

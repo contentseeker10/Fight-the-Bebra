@@ -10,5 +10,5 @@ var death_count: int
 func _init(user_data: Dictionary) -> void:
 	id = user_data.get("id", -1)
 	username = user_data.get("username", "ERROR")
-	record_score = user_data.get("record_score", -1)
-	death_count = user_data.get("death_count", -1)
+	record_score = user_data.get("recordScore", -1)
+	death_count = user_data.get("deathCount", -1)

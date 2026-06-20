@@ -1,5 +1,6 @@
 package dev.contentseeker10;
 
+import dev.contentseeker10.network.tcp.ClientTCP;
 import dev.contentseeker10.network.tcp.bridge.BridgeTCP;
 
 import java.io.IOException;

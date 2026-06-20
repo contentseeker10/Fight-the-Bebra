@@ -68,7 +68,7 @@ public class AuthorizationService {
                 }
             }
         } catch (SQLException e) {
-            return new AuthResponseDTO(false, "Database Error", null);
+            return new AuthResponseDTO(false, "Database Error" + e.getMessage(), null);
         }
 
         return new AuthResponseDTO(true, "", user);
