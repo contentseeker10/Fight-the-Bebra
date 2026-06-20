@@ -1,7 +1,8 @@
 package dev.contentseeker10.network.tcp.bridge;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.contentseeker10.dto.BridgeRequestDTO;
+import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
 import dev.contentseeker10.network.tcp.ClientTCP;
@@ -9,8 +10,10 @@ import dev.contentseeker10.network.tcp.ClientTCP;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class BridgeTCP implements Runnable {
 
@@ -28,13 +31,25 @@ public class BridgeTCP implements Runnable {
         try (bridgeSocket) {
             while (true) {
                 try (Socket gameSocket = bridgeSocket.accept();
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()))) {
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
+                     OutputStream os = gameSocket.getOutputStream()) {
 
                     String json;
                     while ((json = reader.readLine()) != null) {
-                        // TODO: Parse JSON via JsonNode of Jackson
-                        // TODO: Build Message from data
-                        // TODO: Send response back to Game Client
+                        JsonNode root = mapper.readTree(json);
+                        CommandType command = CommandType.valueOf(root.get("command").asText());
+
+                        JsonNode request = root.get("request");
+                        String data = request.toString();
+
+                        Payload payload = new Payload(command.getCode(), 0, data);
+                        Message message = new Message((byte) 0x13, (byte) 2, 0, payload);
+
+                        Message response = client.sendRequest(message);
+                        String responseJson = response.getPayload().getData();
+
+                        os.write((responseJson + "\n").getBytes(StandardCharsets.UTF_8));
+                        os.flush();
                     }
                 } catch (IOException e) {
                     System.err.println("[BRIDGE] Game client disconnected: " + e.getMessage());
@@ -47,4 +62,5 @@ public class BridgeTCP implements Runnable {
             throw new RuntimeException(e);
         }
     }
+
 }
