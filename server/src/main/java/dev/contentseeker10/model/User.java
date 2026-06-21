@@ -1,8 +1,12 @@
 package dev.contentseeker10.model;
 
+import dev.contentseeker10.model.type.UserType;
+
 public class User {
 
     private final int id;
+
+    private UserType type = UserType.NONE;
 
     private String username;
 
@@ -18,6 +22,14 @@ public class User {
 
     public int getId() {
         return id;
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
 
     public String getUsername() {
