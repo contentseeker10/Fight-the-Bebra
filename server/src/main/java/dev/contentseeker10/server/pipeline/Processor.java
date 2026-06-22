@@ -10,8 +10,10 @@ import dev.contentseeker10.dto.RegisterResponseDTO;
 import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
+import dev.contentseeker10.network.context.ConnectionContext;
 import dev.contentseeker10.network.context.RequestContext;
 import dev.contentseeker10.services.AuthorizationService;
+import dev.contentseeker10.services.SessionService;
 
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -19,6 +21,7 @@ import java.util.concurrent.BlockingQueue;
 public class Processor implements Runnable {
 
     private static final AuthorizationService authorizationService = AuthorizationService.getInstance();
+    private static final SessionService sessionService = SessionService.getInstance();
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -39,7 +42,7 @@ public class Processor implements Runnable {
 
         String response = switch (commandType) {
             case REGISTER -> processRegister(data);
-            case LOGIN -> processLogin(data);
+            case LOGIN -> processLogin(data, requestContext.getConnection());
             default -> "{'response': 'ServerTCP Error'}";
         };
 
@@ -80,7 +83,7 @@ public class Processor implements Runnable {
         return responseStr;
     }
 
-    private String processLogin(String data) {
+    private String processLogin(String data, ConnectionContext context) {
         AuthRequestDTO request;
         AuthResponseDTO response;
         String responseStr;
@@ -97,6 +100,10 @@ public class Processor implements Runnable {
         }
 
         response = authorizationService.authorize(request);
+
+        if (response.success()) {
+            sessionService.newSession(response.user().id(), context);
+        }
 
         try {
             responseStr = mapper.writeValueAsString(response);

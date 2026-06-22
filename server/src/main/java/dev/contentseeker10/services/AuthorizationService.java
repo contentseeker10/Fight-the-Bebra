@@ -71,6 +71,8 @@ public class AuthorizationService {
             return new AuthResponseDTO(false, "Database Error" + e.getMessage(), null);
         }
 
+
+
         return new AuthResponseDTO(true, "", user);
     }
 

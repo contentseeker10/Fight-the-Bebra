@@ -4,7 +4,7 @@ import dev.contentseeker10.model.Lobby;
 import dev.contentseeker10.model.User;
 import dev.contentseeker10.model.type.LobbyType;
 import dev.contentseeker10.model.type.UserType;
-import net.bytebuddy.utility.RandomString;
+import java.security.SecureRandom;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,8 +75,31 @@ public class LobbyService {
         }
     }
 
+    public void forceLeaveLobby(Integer userId) {
+        if (userId == null) {
+            return;
+        }
+        for (Map.Entry<String, Lobby> entry : activeLobbies.entrySet()) {
+            Lobby lobby = entry.getValue();
+            synchronized (lobby) {
+                if (lobby.getAdmin() != null && lobby.getAdmin().getId() == userId) {
+                    leaveLobby(entry.getKey(), lobby.getAdmin());
+                } else if (lobby.getGuest() != null && lobby.getGuest().getId() == userId) {
+                    leaveLobby(entry.getKey(), lobby.getGuest());
+                }
+            }
+        }
+    }
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private static String generateCode() {
-        return RandomString.make(5).toUpperCase();
+        StringBuilder sb = new StringBuilder(5);
+        for (int i = 0; i < 5; i++) {
+            sb.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+        }
+        return sb.toString();
     }
 
 }
