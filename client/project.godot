@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 EventManager="*uid://dp8qkf2aw27x1"
 NetworkManager="*uid://3m1feccb8o4c"
 AudioManager="*uid://cmg70wc0afreh"
+AuthManager="*uid://cvqty4myuc1ef"
 AccountManager="*uid://bnbmnm34otxe5"
 
 [display]

@@ -21,8 +21,6 @@ public class LobbyService {
 
     private final Map<String, Lobby> activeLobbies = new ConcurrentHashMap<>();
 
-    // TODO: Make DTO for Lobby Response data and switch return type to it instead of String
-
     public CreateLobbyResponseDTO createLobby(User creator) {
         if (creator == null) {
             return new CreateLobbyResponseDTO(false, "Bad Request", "");

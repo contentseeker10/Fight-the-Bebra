@@ -2,6 +2,7 @@ package dev.contentseeker10.network.tcp.bridge;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.contentseeker10.dto.ResponseDTO;
 import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
@@ -48,7 +49,10 @@ public class BridgeTCP implements Runnable {
                         Message message = new Message((byte) 0x13, (byte) 2, 0, payload);
 
                         Message response = client.sendRequest(message);
-                        String responseJson = response.getPayload().getData();
+                        String commandStr = getResponseCommand(response.getPayload().getCmdType());
+                        String responseStr = response.getPayload().getData();
+
+                        String responseJson = mapper.writeValueAsString(new ResponseDTO(commandStr, responseStr));
 
                         os.write((responseJson + "\n").getBytes(StandardCharsets.UTF_8));
                         os.flush();
@@ -61,6 +65,24 @@ public class BridgeTCP implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getResponseCommand(int command) {
+        return switch (command) {
+            case 0 -> "RESPONSE";
+
+            case 1 -> "REGISTER";
+            case 2 -> "LOGIN";
+
+            case 3 -> "CREATE_ROOM";
+            case 4 -> "JOIN_ROOM";
+            case 5 -> "UPDATE_ROOM";
+            case 6 -> "LEAVE_ROOM";
+
+            case 7 -> "START_GAME";
+
+            default -> "UNKNOWN";
+        };
     }
 
 }
