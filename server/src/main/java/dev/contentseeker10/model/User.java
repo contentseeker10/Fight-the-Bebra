@@ -1,5 +1,6 @@
 package dev.contentseeker10.model;
 
+import dev.contentseeker10.dto.UserDTO;
 import dev.contentseeker10.model.type.UserType;
 
 public class User {
@@ -18,6 +19,13 @@ public class User {
         this.username = username;
         this.recordScore = recordScore;
         this.deathCount = deathCount;
+    }
+
+    public User(UserDTO dto) {
+        this.id = dto.id();
+        this.username = dto.username();
+        this.recordScore = dto.recordScore();
+        this.deathCount = dto.deathCount();
     }
 
     public int getId() {
@@ -54,6 +62,21 @@ public class User {
 
     public void setDeathCount(int deathCount) {
         this.deathCount = deathCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+        return id == user.id && username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + username.hashCode();
+        return result;
     }
 
     @Override

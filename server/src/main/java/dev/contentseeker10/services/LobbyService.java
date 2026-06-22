@@ -1,5 +1,9 @@
 package dev.contentseeker10.services;
 
+import dev.contentseeker10.dto.UserDTO;
+import dev.contentseeker10.dto.lobby.CreateLobbyResponseDTO;
+import dev.contentseeker10.dto.lobby.JoinLobbyResponseDTO;
+import dev.contentseeker10.dto.lobby.LeaveLobbyResponseDTO;
 import dev.contentseeker10.model.Lobby;
 import dev.contentseeker10.model.User;
 import dev.contentseeker10.model.type.LobbyType;
@@ -19,7 +23,10 @@ public class LobbyService {
 
     // TODO: Make DTO for Lobby Response data and switch return type to it instead of String
 
-    public String createLobby(User creator) {
+    public CreateLobbyResponseDTO createLobby(User creator) {
+        if (creator == null) {
+            return new CreateLobbyResponseDTO(false, "Bad Request", "");
+        }
         creator.setType(UserType.ADMIN);
         String code;
         Lobby lobby;
@@ -27,31 +34,31 @@ public class LobbyService {
             code = generateCode();
             lobby = new Lobby(code, creator);
         } while (activeLobbies.putIfAbsent(code, lobby) != null);
-        return code;
+        return new CreateLobbyResponseDTO(true, "", code);
     }
 
-    public String enterLobby(String lobbyCode, User user) {
+    public JoinLobbyResponseDTO joinLobby(String lobbyCode, User user) {
         Lobby lobby = activeLobbies.get(lobbyCode);
         if (lobby == null) {
-            return "Lobby not found";
+            return new JoinLobbyResponseDTO(false, "Lobby not found", null);
         }
         synchronized (lobby) {
             if (lobby.getGuest() != null) {
-                return "Room is full";
+                return new JoinLobbyResponseDTO(false, "Room is full", null);
             }
             if (lobby.getType() != LobbyType.WAITING) {
-                return "Game already started";
+                return new JoinLobbyResponseDTO(false, "Game already started", null);
             }
             user.setType(UserType.GUEST);
             lobby.setGuest(user);
-            return "Success";
+            return new JoinLobbyResponseDTO(true, "", new UserDTO(lobby.getAdmin()));
         }
     }
 
-    public String leaveLobby(String lobbyCode, User user) {
+    public LeaveLobbyResponseDTO leaveLobby(String lobbyCode, User user) {
         Lobby lobby = activeLobbies.get(lobbyCode);
         if (lobby == null || lobby.getAdmin() == null) {
-            return "Bad Request";
+            return new LeaveLobbyResponseDTO(false, "Bad Request");
         }
         synchronized (lobby) {
             UserType userType = user.getType();
@@ -69,22 +76,22 @@ public class LobbyService {
                 lobby.getGuest().setType(UserType.NONE);
                 lobby.setGuest(null);
             } else {
-                return "Bad Request";
+                return new LeaveLobbyResponseDTO(false, "Bad Request");
             }
-            return "Success";
+            return new LeaveLobbyResponseDTO(true, "");
         }
     }
 
-    public void forceLeaveLobby(Integer userId) {
-        if (userId == null) {
+    public void forceLeaveLobby(User user) {
+        if (user == null) {
             return;
         }
         for (Map.Entry<String, Lobby> entry : activeLobbies.entrySet()) {
             Lobby lobby = entry.getValue();
             synchronized (lobby) {
-                if (lobby.getAdmin() != null && lobby.getAdmin().getId() == userId) {
+                if (lobby.getAdmin() != null && lobby.getAdmin().equals(user)) {
                     leaveLobby(entry.getKey(), lobby.getAdmin());
-                } else if (lobby.getGuest() != null && lobby.getGuest().getId() == userId) {
+                } else if (lobby.getGuest() != null && lobby.getGuest().equals(user)) {
                     leaveLobby(entry.getKey(), lobby.getGuest());
                 }
             }

@@ -1,5 +1,6 @@
 package dev.contentseeker10.network.tcp;
 
+import dev.contentseeker10.model.User;
 import dev.contentseeker10.network.context.ConnectionContext;
 import dev.contentseeker10.network.context.RequestContext;
 import dev.contentseeker10.network.context.TcpConnectionContext;
@@ -36,9 +37,9 @@ public class HandlerTCP extends Thread {
             }
         } catch (IOException e) {
             ConnectionContext context = new TcpConnectionContext(clientSocket);
-            Integer userId = SessionService.getInstance().getUserIdByConnection(context);
-            LobbyService.getInstance().forceLeaveLobby(userId);
-            SessionService.getInstance().endSession(userId);
+            User user = SessionService.getInstance().getSessionUser(context);
+            LobbyService.getInstance().forceLeaveLobby(user);
+            SessionService.getInstance().endSession(context);
             System.out.println("[SERVER] Client disconnected: " + e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

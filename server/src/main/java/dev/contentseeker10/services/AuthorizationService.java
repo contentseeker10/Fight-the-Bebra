@@ -2,7 +2,10 @@ package dev.contentseeker10.services;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import dev.contentseeker10.dto.*;
-import dev.contentseeker10.model.User;
+import dev.contentseeker10.dto.auth.AuthRequestDTO;
+import dev.contentseeker10.dto.auth.AuthResponseDTO;
+import dev.contentseeker10.dto.auth.RegisterRequestDTO;
+import dev.contentseeker10.dto.auth.RegisterResponseDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -20,4 +20,17 @@ public class TcpConnectionContext implements ConnectionContext {
     public Socket getSocket() {
         return socket;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TcpConnectionContext that = (TcpConnectionContext) o;
+        return socket.equals(that.socket);
+    }
+
+    @Override
+    public int hashCode() {
+        return socket.hashCode();
+    }
 }

@@ -14,40 +14,40 @@ public class SessionService {
     private SessionService() {}
     public static SessionService getInstance() { return INSTANCE; }
 
-    private static final Map<Integer, ConnectionContext> activeSessions = new ConcurrentHashMap<>();
+    private static final Map<ConnectionContext, User> connectionToUser = new ConcurrentHashMap<>();
+    private static final Map<User, ConnectionContext> userToConnection = new ConcurrentHashMap<>();
 
-    public void newSession(Integer userId, ConnectionContext context) {
-        activeSessions.putIfAbsent(userId, context);
-        System.out.println("[SERVER] New session started for userId: " + userId);
-    }
-
-    public ConnectionContext getSession(Integer userId) {
-        if (userId == null) {
-            return null;
-        }
-        return activeSessions.get(userId);
-    }
-
-    public void endSession(Integer userId) {
-        if (userId == null) {
+    public void newSession(User user, ConnectionContext context) {
+        if (user == null || context == null) {
             return;
         }
-        activeSessions.remove(userId);
-        System.out.println("[SERVER] Session ended for userId: " + userId);
+        connectionToUser.putIfAbsent(context, user);
+        userToConnection.putIfAbsent(user, context);
+        System.out.println("[SERVER] New session started for user: " + user.getUsername() + " (" + user.getId() + ")");
     }
 
-    public Integer getUserIdByConnection(ConnectionContext context) {
-        if (context instanceof TcpConnectionContext tcpContext) {
-            Socket socket = tcpContext.getSocket();
-            for (Map.Entry<Integer, ConnectionContext> entry : activeSessions.entrySet()) {
-                if (entry.getValue() instanceof TcpConnectionContext activeTcp) {
-                    if (activeTcp.getSocket() == socket) {
-                        return entry.getKey();
-                    }
-                }
-            }
+    public ConnectionContext getSession(User user) {
+        if (user == null) {
+            return null;
         }
-        return null;
+        return userToConnection.get(user);
+    }
+
+    public User getSessionUser(ConnectionContext context) {
+        if (context == null) {
+            return null;
+        }
+        return connectionToUser.get(context);
+    }
+
+    public void endSession(ConnectionContext context) {
+        if (context == null) {
+            return;
+        }
+        User user = getSessionUser(context);
+        connectionToUser.remove(context);
+        userToConnection.remove(user);
+        System.out.println("[SERVER] Session ended for user: " + user.getUsername() + " (" + user.getId() + ")");
     }
 
 }

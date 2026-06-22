@@ -1,27 +1,32 @@
 package dev.contentseeker10.server.pipeline;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.contentseeker10.dto.AuthRequestDTO;
-import dev.contentseeker10.dto.AuthResponseDTO;
-import dev.contentseeker10.dto.RegisterRequestDTO;
-import dev.contentseeker10.dto.RegisterResponseDTO;
+import dev.contentseeker10.dto.auth.AuthRequestDTO;
+import dev.contentseeker10.dto.auth.AuthResponseDTO;
+import dev.contentseeker10.dto.auth.RegisterRequestDTO;
+import dev.contentseeker10.dto.auth.RegisterResponseDTO;
+import dev.contentseeker10.dto.lobby.CreateLobbyResponseDTO;
+import dev.contentseeker10.dto.lobby.JoinLobbyResponseDTO;
+import dev.contentseeker10.dto.lobby.LeaveLobbyResponseDTO;
+import dev.contentseeker10.dto.lobby.UpdateLobbyResponseDTO;
 import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
+import dev.contentseeker10.model.User;
 import dev.contentseeker10.network.context.ConnectionContext;
 import dev.contentseeker10.network.context.RequestContext;
 import dev.contentseeker10.services.AuthorizationService;
+import dev.contentseeker10.services.LobbyService;
 import dev.contentseeker10.services.SessionService;
 
-import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
 public class Processor implements Runnable {
 
     private static final AuthorizationService authorizationService = AuthorizationService.getInstance();
     private static final SessionService sessionService = SessionService.getInstance();
+    private static final LobbyService lobbyService = LobbyService.getInstance();
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -40,9 +45,17 @@ public class Processor implements Runnable {
         CommandType commandType = CommandType.fromCode(payload.getCmdType());
         String data = payload.getData();
 
+        ConnectionContext context = requestContext.getConnection();
+
         String response = switch (commandType) {
             case REGISTER -> processRegister(data);
-            case LOGIN -> processLogin(data, requestContext.getConnection());
+            case LOGIN -> processLogin(data, context);
+
+            case CREATE_LOBBY -> processCreateLobby(context);
+            case JOIN_LOBBY -> processJoinLobby(data);
+            case UPDATE_LOBBY -> processUpdateLobby(data);
+            case LEAVE_LOBBY -> processLeaveLobby(data);
+
             default -> "{'response': 'ServerTCP Error'}";
         };
 
@@ -52,6 +65,40 @@ public class Processor implements Runnable {
         try {
             outputQueue.put(new RequestContext<>(responseMessage, requestContext.getConnection()));
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String processCreateLobby(ConnectionContext context) {
+        User user = sessionService.getSessionUser(context);
+        CreateLobbyResponseDTO response = lobbyService.createLobby(user);
+        try {
+            return mapper.writeValueAsString(response);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String processJoinLobby(String data) {
+        try {
+            return mapper.writeValueAsString(new JoinLobbyResponseDTO(false, "Server Not Ready", null));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String processUpdateLobby(String data) {
+        try {
+            return mapper.writeValueAsString(new UpdateLobbyResponseDTO(false, "Server Not Ready", null));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String processLeaveLobby(String data) {
+        try {
+            return mapper.writeValueAsString(new LeaveLobbyResponseDTO(false, "Server Not Ready"));
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -102,7 +149,8 @@ public class Processor implements Runnable {
         response = authorizationService.authorize(request);
 
         if (response.success()) {
-            sessionService.newSession(response.user().id(), context);
+            User user = new User(response.user());
+            sessionService.newSession(user, context);
         }
 
         try {
