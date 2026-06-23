@@ -2,14 +2,12 @@ package dev.contentseeker10.server.pipeline;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.contentseeker10.dto.UserDTO;
 import dev.contentseeker10.dto.auth.AuthRequestDTO;
 import dev.contentseeker10.dto.auth.AuthResponseDTO;
 import dev.contentseeker10.dto.auth.RegisterRequestDTO;
 import dev.contentseeker10.dto.auth.RegisterResponseDTO;
-import dev.contentseeker10.dto.lobby.CreateLobbyResponseDTO;
-import dev.contentseeker10.dto.lobby.JoinLobbyResponseDTO;
-import dev.contentseeker10.dto.lobby.LeaveLobbyResponseDTO;
-import dev.contentseeker10.dto.lobby.UpdateLobbyResponseDTO;
+import dev.contentseeker10.dto.lobby.*;
 import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
@@ -52,9 +50,9 @@ public class Processor implements Runnable {
             case LOGIN -> processLogin(data, context);
 
             case CREATE_LOBBY -> processCreateLobby(context);
-            case JOIN_LOBBY -> processJoinLobby(data);
-            case UPDATE_LOBBY -> processUpdateLobby(data);
-            case LEAVE_LOBBY -> processLeaveLobby(data);
+            case JOIN_LOBBY -> processJoinLobby(data, context);
+            case UPDATE_LOBBY -> processUpdateLobby();
+            case LEAVE_LOBBY -> processLeaveLobby(data, context);
 
             default -> "{'response': 'ServerTCP Error'}";
         };
@@ -64,6 +62,16 @@ public class Processor implements Runnable {
 
         try {
             outputQueue.put(new RequestContext<>(responseMessage, requestContext.getConnection()));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void sendSingleUpdate(CommandType type, String data, ConnectionContext to) {
+        Payload updatePayload = new Payload(type.getCode(), 0, data);
+        Message updateMessage = new Message((byte) 0x13, (byte) 1, 0, updatePayload);
+        try {
+            outputQueue.put(new RequestContext<>(updateMessage, to));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -79,15 +87,47 @@ public class Processor implements Runnable {
         }
     }
 
-    private String processJoinLobby(String data) {
+    private String processJoinLobby(String data, ConnectionContext context) {
+        JoinLobbyRequestDTO request;
+        JoinLobbyResponseDTO response;
+        String responseStr;
+
+        User user = sessionService.getSessionUser(context);
+
         try {
-            return mapper.writeValueAsString(new JoinLobbyResponseDTO(false, "Server Not Ready", null));
+            request = mapper.readValue(data, JoinLobbyRequestDTO.class);
+        } catch (JsonProcessingException e) {
+            try {
+                responseStr = mapper.writeValueAsString(new JoinLobbyResponseDTO(false, "Bad Request", null));
+                return responseStr;
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        response = lobbyService.joinLobby(request.lobbyCode(), user);
+
+        if (response.success()) {
+            String updateData;
+            try {
+                updateData = mapper.writeValueAsString(new UpdateLobbyResponseDTO(true, "", new UserDTO[]{new UserDTO(user)}));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            ConnectionContext to = sessionService.getSession(lobbyService.getLobbyAdmin(request.lobbyCode()));
+            sendSingleUpdate(CommandType.UPDATE_LOBBY, updateData, to);
+        }
+
+        try {
+            responseStr = mapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        return responseStr;
     }
 
-    private String processUpdateLobby(String data) {
+    private String processUpdateLobby() {
         try {
             return mapper.writeValueAsString(new UpdateLobbyResponseDTO(false, "Server Not Ready", null));
         } catch (JsonProcessingException e) {
@@ -95,12 +135,44 @@ public class Processor implements Runnable {
         }
     }
 
-    private String processLeaveLobby(String data) {
+    private String processLeaveLobby(String data, ConnectionContext context) {
+        LeaveLobbyRequestDTO request;
+        LeaveLobbyResponseDTO response;
+        String responseStr;
+
+        User user = sessionService.getSessionUser(context);
+
         try {
-            return mapper.writeValueAsString(new LeaveLobbyResponseDTO(false, "Server Not Ready"));
+            request = mapper.readValue(data, LeaveLobbyRequestDTO.class);
+        } catch (JsonProcessingException e) {
+            try {
+                responseStr = mapper.writeValueAsString(new LeaveLobbyResponseDTO(false, "Bad Request"));
+                return responseStr;
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        response = lobbyService.leaveLobby(request.lobbyCode(), user);
+
+        if (response.success()) {
+            String updateData;
+            try {
+                updateData = mapper.writeValueAsString(new UpdateLobbyResponseDTO(true, "", new UserDTO[]{}));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            ConnectionContext to = sessionService.getSession(lobbyService.getLobbyAdmin(request.lobbyCode()));
+            sendSingleUpdate(CommandType.UPDATE_LOBBY, updateData, to);
+        }
+
+        try {
+            responseStr = mapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        return responseStr;
     }
 
     private String processRegister(String data) {

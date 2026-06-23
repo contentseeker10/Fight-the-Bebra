@@ -71,6 +71,7 @@ size_flags_horizontal = 4
 [node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/VBoxContainer2" unique_id=1191538412]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+disabled = true
 text = "Start game"
 
 [node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer/VBoxContainer2" unique_id=777512427]
@@ -84,7 +85,7 @@ theme_override_constants/separation = 2
 [node name="PlayerCount" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=142814220]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Players 2/2"
+text = "Players 1/2"
 horizontal_alignment = 1
 
 [node name="AdminUsername" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=1498081452]
@@ -95,6 +96,7 @@ text = "username1"
 horizontal_alignment = 1
 
 [node name="PlayerUsername" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer" unique_id=441594199]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.81969726, 3.85046e-07, 1)
 theme_override_font_sizes/font_size = 10

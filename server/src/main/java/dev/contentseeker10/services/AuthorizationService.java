@@ -6,6 +6,7 @@ import dev.contentseeker10.dto.auth.AuthRequestDTO;
 import dev.contentseeker10.dto.auth.AuthResponseDTO;
 import dev.contentseeker10.dto.auth.RegisterRequestDTO;
 import dev.contentseeker10.dto.auth.RegisterResponseDTO;
+import dev.contentseeker10.model.type.UserType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,7 +62,9 @@ public class AuthorizationService {
                     if (!result.verified) {
                         return new AuthResponseDTO(false, "Wrong Password", null);
                     }
-                    user = new UserDTO(rs.getInt("id"),
+                    user = new UserDTO(
+                            rs.getInt("id"),
+                            UserType.NONE,
                             rs.getString("username"),
                             rs.getInt("record_score"),
                             rs.getInt("death_count")

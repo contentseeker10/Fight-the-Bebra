@@ -96,6 +96,16 @@ public class LobbyService {
         }
     }
 
+    public User getLobbyAdmin(String lobbyCode) {
+        // Would be nice to have a validation of lobby code here, but I'll skip it
+        return activeLobbies.get(lobbyCode).getAdmin();
+    }
+
+    public User getLobbyGuest(String lobbyCode) {
+        // Would be nice to have a validation of lobby code here, but I'll skip it
+        return activeLobbies.get(lobbyCode).getGuest();
+    }
+
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
 
