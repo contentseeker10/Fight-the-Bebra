@@ -41,6 +41,7 @@ func _on_join_lobby_completed(success: bool, error: String, lobby_admin: User) -
 		AccountManager.current_user.type = User.UserType.GUEST
 		admin = lobby_admin
 		guest = AccountManager.current_user
+		get_tree().change_scene_to_file("res://ui/menus/lobby/room_create/room_create.tscn")
 	else:
 		printerr(error)
 
