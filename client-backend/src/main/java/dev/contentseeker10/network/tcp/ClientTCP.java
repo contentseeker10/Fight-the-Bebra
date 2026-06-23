@@ -15,7 +15,7 @@ public class ClientTCP {
     private ClientTCP() {}
     public static ClientTCP getInstance() { return INSTANCE; }
 
-    private static final String HOST = "localhost";
+    private static final String HOST = "192.168.0.105";
     private static final int PORT = 9090;
 
     private Socket socket;

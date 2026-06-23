@@ -82,14 +82,23 @@ func _process_response() -> void:
 			EventManager.login_completed.emit(success, error, user)
 		
 		CommandType.CREATE_LOBBY:
-			print("create lobby cmd")
 			EventManager.create_lobby_completed.emit(success, error, response.get("code", "error"))
 		
-		CommandType.JOIN_LOBBY: pass
+		CommandType.JOIN_LOBBY:
+			var admin: User
+			if success: 
+				admin = User.new(response.get("admin", {}))
+			EventManager.join_lobby_completed.emit(success, error, admin)
 		
-		CommandType.UPDATE_LOBBY: pass
+		CommandType.UPDATE_LOBBY: 
+			if not success:
+				printerr("Error updating lobby")
+				return
+			var users: Array = response.get("users", [])
+			EventManager.update_lobby_completed.emit(success, error, users)
 		
-		CommandType.LEAVE_LOBBY: pass
+		CommandType.LEAVE_LOBBY: 
+			EventManager.leave_lobby_completed.emit(success, error)
 
 
 

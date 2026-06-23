@@ -12,6 +12,7 @@ import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
 import dev.contentseeker10.model.User;
+import dev.contentseeker10.model.type.UserType;
 import dev.contentseeker10.network.context.ConnectionContext;
 import dev.contentseeker10.network.context.RequestContext;
 import dev.contentseeker10.services.AuthorizationService;
@@ -153,6 +154,9 @@ public class Processor implements Runnable {
             }
         }
 
+        User admin = lobbyService.getLobbyAdmin(request.lobbyCode());
+        User guest = lobbyService.getLobbyGuest(request.lobbyCode());
+
         response = lobbyService.leaveLobby(request.lobbyCode(), user);
 
         if (response.success()) {
@@ -162,7 +166,8 @@ public class Processor implements Runnable {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            ConnectionContext to = sessionService.getSession(lobbyService.getLobbyAdmin(request.lobbyCode()));
+            User userTo = user.getType() == UserType.ADMIN ? guest : admin;
+            ConnectionContext to = sessionService.getSession(userTo);
             sendSingleUpdate(CommandType.UPDATE_LOBBY, updateData, to);
         }
 

@@ -41,6 +41,7 @@ public class ServerManager {
         try {
             System.out.println("[SERVER] Starting TCP server..");
             ServerSocket serverSocket = new ServerSocket(TCP_PORT);
+            System.out.println("[SERVER] TCP Server: " + serverSocket);
             tcpServer = new ServerTCP(serverSocket);
             tcpServerThread = new Thread(tcpServer, "TCP-Server-Acceptor");
             tcpServerThread.start();
