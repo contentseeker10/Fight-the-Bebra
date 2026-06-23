@@ -21,7 +21,7 @@ public class SessionService {
         if (user == null || context == null) {
             return;
         }
-        if (connectionToUser.putIfAbsent(context, user) != null && userToConnection.putIfAbsent(user, context) != null)
+        if (connectionToUser.putIfAbsent(context, user) == null && userToConnection.putIfAbsent(user, context) == null)
             System.out.println("[SERVER] New session started for user: " + user.getUsername() + " (" + user.getId() + ")");
     }
 
@@ -44,9 +44,8 @@ public class SessionService {
             return;
         }
         User user = getSessionUser(context);
-        connectionToUser.remove(context);
-        userToConnection.remove(user);
-        System.out.println("[SERVER] Session ended for user: " + user.getUsername() + " (" + user.getId() + ")");
+        if (connectionToUser.remove(context) != null && userToConnection.remove(user) != null)
+            System.out.println("[SERVER] Session ended for user: " + user.getUsername() + " (" + user.getId() + ")");
     }
 
 }
