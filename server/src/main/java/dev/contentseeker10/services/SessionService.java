@@ -21,9 +21,8 @@ public class SessionService {
         if (user == null || context == null) {
             return;
         }
-        connectionToUser.putIfAbsent(context, user);
-        userToConnection.putIfAbsent(user, context);
-        System.out.println("[SERVER] New session started for user: " + user.getUsername() + " (" + user.getId() + ")");
+        if (connectionToUser.putIfAbsent(context, user) != null && userToConnection.putIfAbsent(user, context) != null)
+            System.out.println("[SERVER] New session started for user: " + user.getUsername() + " (" + user.getId() + ")");
     }
 
     public ConnectionContext getSession(User user) {

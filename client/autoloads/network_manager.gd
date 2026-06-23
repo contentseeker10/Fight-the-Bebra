@@ -63,8 +63,9 @@ func _process_response() -> void:
 	var data: Dictionary = JSON.parse_string(json)
 	var command_type := _parse_command_str(data.get("command", "UNKNOWN"))
 	var response: Dictionary = JSON.parse_string(data.get("response", {}))
+	print(data)
 	if response.is_empty() or command_type == CommandType.UNKNOWN:
-		printerr("Bad Response")
+		printerr("Bad Response: ", data)
 		return
 	var success: bool = response.get("success", false)
 	var error: String = response.get("error", "error")
@@ -81,6 +82,7 @@ func _process_response() -> void:
 			EventManager.login_completed.emit(success, error, user)
 		
 		CommandType.CREATE_LOBBY:
+			print("create lobby cmd")
 			EventManager.create_lobby_completed.emit(success, error, response.get("code", "error"))
 		
 		CommandType.JOIN_LOBBY: pass

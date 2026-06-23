@@ -58,7 +58,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Room score record: 0"
 
-[node name="RoomName" type="Label" parent="CenterContainer/VBoxContainer" unique_id=98854731]
+[node name="RoomCode" type="Label" parent="CenterContainer/VBoxContainer" unique_id=98854731]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 20

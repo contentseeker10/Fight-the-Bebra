@@ -74,10 +74,10 @@ public class BridgeTCP implements Runnable {
             case 1 -> "REGISTER";
             case 2 -> "LOGIN";
 
-            case 3 -> "CREATE_ROOM";
-            case 4 -> "JOIN_ROOM";
-            case 5 -> "UPDATE_ROOM";
-            case 6 -> "LEAVE_ROOM";
+            case 3 -> "CREATE_LOBBY";
+            case 4 -> "JOIN_LOBBY";
+            case 5 -> "UPDATE_LOBBY";
+            case 6 -> "LEAVE_LOBBY";
 
             case 7 -> "START_GAME";
 

@@ -11,9 +11,9 @@ func _ready() -> void:
 func _on_register_button_pressed() -> void:
 	EventManager.register_requested.emit(username_edit.text, password_edit.text)
 
-func _on_register_completed(success: bool, error: String) -> void:
+func _on_register_completed(success: bool, err_msg: String) -> void:
 	if success:
 		get_tree().change_scene_to_file("res://ui/menus/auth/login/login.tscn")
 	else:
-		error_label.text = error
+		error_label.text = err_msg
 		error_label.show()

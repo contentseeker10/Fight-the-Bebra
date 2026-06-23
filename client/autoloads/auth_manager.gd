@@ -13,6 +13,7 @@ func _on_register_requested(username: String, password: String) -> void:
 	}
 	NetworkManager.send_request(NetworkManager.CommandType.REGISTER, request)
 
+
 func _on_login_requested(username: String, password: String) -> void:
 	var request := {
 		"username": username, 

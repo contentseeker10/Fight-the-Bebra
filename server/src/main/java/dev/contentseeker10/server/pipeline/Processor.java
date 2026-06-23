@@ -59,7 +59,7 @@ public class Processor implements Runnable {
             default -> "{'response': 'ServerTCP Error'}";
         };
 
-        Payload responsePayload = new Payload(CommandType.RESPONSE.getCode(), 0, response);
+        Payload responsePayload = new Payload(commandType.getCode(), 0, response);
         Message responseMessage = new Message((byte) 0x13, (byte) 1, message.getMessageId(), responsePayload);
 
         try {

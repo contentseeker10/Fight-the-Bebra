@@ -11,10 +11,10 @@ func _ready() -> void:
 func _on_login_button_pressed() -> void:
 	EventManager.login_requested.emit(username_edit.text, password_edit.text)
 
-func _on_login_completed(success: bool, error: String, user: User) -> void:
+func _on_login_completed(success: bool, err_msg: String, user: User) -> void:
 	if success:
 		AccountManager.current_user = user
 		get_tree().change_scene_to_file("res://ui/menus/lobby/lobby.tscn")
 	else:
-		error_label.text = error
+		error_label.text = err_msg
 		error_label.show()
