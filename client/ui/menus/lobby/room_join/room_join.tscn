@@ -52,7 +52,6 @@ max_length = 5
 
 [node name="JoinButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=315189436]
 layout_mode = 2
-disabled = true
 text = "Join"
 
 [node name="ReturnButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=328553949]
