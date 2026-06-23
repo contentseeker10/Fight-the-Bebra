@@ -8,16 +8,23 @@ extends Control
 
 
 func _ready() -> void:
+	EventManager.guest_joined.connect(_on_guest_joined)
+	EventManager.player_left.connect(_on_player_left)
 	_update_ui()
 
 
 func _update_ui() -> void:
 	room_code.text = LobbyManager.code
 	
-	if LobbyManager.admin:
-		admin_username.text = LobbyManager.admin.username
+	admin_username.text = LobbyManager.admin.username
+	
 	if LobbyManager.guest:
+		player_count.text = "Players 2/2"
+		player_username.show()
 		player_username.text = LobbyManager.guest.username
+	else:
+		player_count.text = "Players 1/2"
+		player_username.hide()
 	
 	if AccountManager.current_user.type == User.UserType.ADMIN:
 		start_button.disabled = false
@@ -31,3 +38,11 @@ func _on_start_button_pressed() -> void:
 func _on_exit_button_pressed() -> void:
 	# TODO: Call to Java client over NetworkManager (ROOM DISMISSED)
 	get_tree().change_scene_to_file("res://ui/menus/lobby/lobby.tscn")
+
+
+func _on_guest_joined(_guest: User) -> void:
+	_update_ui()
+
+
+func _on_player_left() -> void:
+	pass
