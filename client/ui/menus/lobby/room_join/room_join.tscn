@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://d3d80c2mm4mdy"]
+[gd_scene load_steps=3 format=3 uid="uid://d3d80c2mm4mdy"]
 
 [ext_resource type="Script" uid="uid://hdq4yuoge2l4" path="res://ui/menus/lobby/room_join/room_join.gd" id="1_jnh8w"]
+[ext_resource type="PackedScene" uid="uid://b2uk5sr33nmne" path="res://ui/components/network_statuses/network_statuses.tscn" id="2_join"]
 
 [node name="RoomJoin" type="Control" unique_id=1314100204]
 layout_mode = 3
@@ -10,6 +11,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jnh8w")
+
+[node name="NetworkStatuses" parent="." instance=ExtResource("2_join")]
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1948270093]
 layout_mode = 1

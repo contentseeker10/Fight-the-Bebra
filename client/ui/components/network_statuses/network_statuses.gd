@@ -7,6 +7,10 @@ extends CanvasLayer
 func _ready() -> void:
 	EventManager.bridge_status_updated.connect(_on_bridge_status_updated)
 	EventManager.server_status_updated.connect(_on_server_status_updated)
+	
+	# Load last known status values
+	_on_bridge_status_updated(NetworkManager.last_bridge_status, NetworkManager.last_bridge_color)
+	_on_server_status_updated(NetworkManager.last_server_status, NetworkManager.last_server_color)
 
 
 func _on_bridge_status_updated(status: String, status_color: Color) -> void:

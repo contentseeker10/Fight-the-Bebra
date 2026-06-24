@@ -5,6 +5,11 @@ const PORT := 9000
 
 var bridge := StreamPeerTCP.new()
 
+var last_bridge_status: String = "NONE"
+var last_bridge_color: Color = Color.GRAY
+var last_server_status: String = "Connection lost"
+var last_server_color: Color = Color.RED
+
 enum CommandType {
 	UNKNOWN,
 	RESPONSE,
@@ -31,7 +36,9 @@ enum CommandType {
 
 func _ready() -> void:
 	_connect_bridge()
-	EventManager.server_status_updated.emit("Connection lost", Color.RED)
+	last_server_status = "Connection lost"
+	last_server_color = Color.RED
+	EventManager.server_status_updated.emit(last_server_status, last_server_color)
 
 func _connect_bridge() -> void:
 	var err := bridge.connect_to_host(HOST, PORT)
@@ -144,10 +151,13 @@ func _handle_single_response(data: Dictionary) -> void:
 		CommandType.HANDSHAKE:
 			if success:
 				print("[NETWORK] UDP Handshake successful!")
-				EventManager.server_status_updated.emit("UDP: Connected", Color.WEB_GREEN)
+				last_server_status = "UDP: Connected"
+				last_server_color = Color.WEB_GREEN
 			else:
 				printerr("[NETWORK] UDP Handshake failed: ", error)
-				EventManager.server_status_updated.emit("UDP: Disconnected", Color.RED)
+				last_server_status = "UDP: Disconnected"
+				last_server_color = Color.RED
+			EventManager.server_status_updated.emit(last_server_status, last_server_color)
 				
 		CommandType.GAME_STATE:
 			var user_id: int = response.get("userId", 0)
@@ -161,9 +171,12 @@ func _handle_single_response(data: Dictionary) -> void:
 		CommandType.SERVER_STATUS:
 			var status: String = response.get("status", "CONNECTION_LOST")
 			if status == "CONNECTED":
-				EventManager.server_status_updated.emit("TCP: Connected", Color.WEB_GREEN)
+				last_server_status = "TCP: Connected"
+				last_server_color = Color.WEB_GREEN
 			else:
-				EventManager.server_status_updated.emit("Connection lost", Color.RED)
+				last_server_status = "Connection lost"
+				last_server_color = Color.RED
+			EventManager.server_status_updated.emit(last_server_status, last_server_color)
 				
 		CommandType.CHAT_MSG:
 			var sender: String = response.get("sender", "unknown")
@@ -192,6 +205,8 @@ func _update_bridge_connection() -> StreamPeerSocket.Status:
 			status = "ERROR"
 			status_color = Color.RED
 	
+	last_bridge_status = status
+	last_bridge_color = status_color
 	EventManager.bridge_status_updated.emit(status, status_color)
 	
 	return bridge.get_status()
