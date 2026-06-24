@@ -97,13 +97,15 @@ public class LobbyService {
     }
 
     public User getLobbyAdmin(String lobbyCode) {
-        // Would be nice to have a validation of lobby code here, but I'll skip it
-        return activeLobbies.get(lobbyCode).getAdmin();
+        if (lobbyCode == null) return null;
+        Lobby lobby = activeLobbies.get(lobbyCode);
+        return lobby != null ? lobby.getAdmin() : null;
     }
 
     public User getLobbyGuest(String lobbyCode) {
-        // Would be nice to have a validation of lobby code here, but I'll skip it
-        return activeLobbies.get(lobbyCode).getGuest();
+        if (lobbyCode == null) return null;
+        Lobby lobby = activeLobbies.get(lobbyCode);
+        return lobby != null ? lobby.getGuest() : null;
     }
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

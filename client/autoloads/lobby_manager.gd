@@ -36,6 +36,7 @@ func _on_create_lobby_completed(success: bool, error: String, lobby_code: String
 
 
 func _on_join_lobby_requested(lobby_code: String) -> void:
+	code = lobby_code
 	NetworkManager.send_request(NetworkManager.CommandType.JOIN_LOBBY, { "lobbyCode": lobby_code })
 
 func _on_join_lobby_completed(success: bool, error: String, lobby_admin: User) -> void:
