@@ -17,5 +17,5 @@ func _ready() -> void:
 
 ## Requests permission to perform an attack.
 func request_attack() -> bool:
-	return not is_dead and can_attack
+	return not is_dead
 
