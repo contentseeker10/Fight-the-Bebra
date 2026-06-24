@@ -31,6 +31,9 @@ func _init_players() -> void:
 	teammate.modulate = Color(0.7, 0.8, 1.0, 1.0) # slightly blue tinted
 	add_child(teammate)
 	
+	# Connect teammate animations
+	teammate.sprite.animation_finished.connect(_on_teammate_animation_finished)
+	
 	# Spawn points
 	if LobbyManager.admin and AccountManager.current_user.id == LobbyManager.admin.id:
 		local_player.global_position = Vector2(100, 150)
@@ -71,15 +74,31 @@ func _on_teammate_state_updated(x: float, y: float, _hp: int, is_attacking: bool
 		else:
 			teammate_dir = "down" if diff.y > 0 else "up"
 		
-		if not is_attacking:
-			teammate.sprite.play("run_" + teammate_dir)
+		if not is_attacking and not teammate.sprite.animation.begins_with("attack"):
+			var anim = "run_" + teammate_dir
+			if teammate.sprite.animation != anim or not teammate.sprite.is_playing():
+				teammate.sprite.play(anim)
 	else:
 		if not is_attacking and not teammate.sprite.animation.begins_with("attack"):
-			teammate.sprite.play("idle_" + teammate_dir)
+			var anim = "idle_" + teammate_dir
+			if teammate.sprite.animation != anim or not teammate.sprite.is_playing():
+				teammate.sprite.play(anim)
 			
 	if is_attacking and not teammate_was_attacking:
-		teammate.sprite.play("attack_1_" + teammate_dir)
+		var anim = "attack_1_" + teammate_dir
+		teammate.sprite.play(anim)
 		var sword_sfx = preload("res://assets/audio/player/Sword Attack 1.wav")
 		AudioManager.play_sfx_2d(sword_sfx, teammate.global_position, 0.08, "SFX")
 		
 	teammate_was_attacking = is_attacking
+
+func _on_teammate_animation_finished() -> void:
+	if teammate and teammate.sprite.animation.begins_with("attack"):
+		var current_anim = teammate.sprite.animation
+		if current_anim.begins_with("attack_1_"):
+			var dir = current_anim.replace("attack_1_", "")
+			teammate.sprite.play("attack_2_" + dir)
+			var sword_sfx2 = preload("res://assets/audio/player/Sword Attack 2.wav")
+			AudioManager.play_sfx_2d(sword_sfx2, teammate.global_position, 0.08, "SFX")
+		else:
+			teammate.sprite.play("idle_" + teammate_dir)

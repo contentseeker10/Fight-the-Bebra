@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://d01d4sq58xxh7"]
+[gd_scene format=3 uid="uid://d01d4sq58xxh7"]
 
 [ext_resource type="Script" uid="uid://b05nqplbvtl5n" path="res://ui/menus/lobby/room_create/room_create.gd" id="1_epk8m"]
 [ext_resource type="PackedScene" uid="uid://b2uk5sr33nmne" path="res://ui/components/network_statuses/network_statuses.tscn" id="2_create"]
@@ -21,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_epk8m")
 
-[node name="NetworkStatuses" parent="." instance=ExtResource("2_create")]
+[node name="NetworkStatuses" parent="." unique_id=1044327384 instance=ExtResource("2_create")]
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1332125970]
 layout_mode = 1

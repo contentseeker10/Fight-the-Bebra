@@ -49,6 +49,7 @@ func _play_animations() -> void:
 ## Called when the state is exited. Ensures the attack area is disabled.
 func exit() -> void:
 	_toggle_attack_area(false)
+	player.can_attack = true
 
 ## Handles input events while in the attacking state.
 func handle_input(_event: InputEvent) -> void:

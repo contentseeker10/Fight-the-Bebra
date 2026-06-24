@@ -17,12 +17,9 @@ func exit() -> void:
 
 ## Processes input events to handle transitioning to the attacking state.
 func handle_input(event: InputEvent) -> void:
-	if event.is_action_pressed("attack") and player.can_attack:
+	if event.is_action_pressed("attack") and player.request_attack():
 		player.can_attack = false
-		var success = await player.request_attack()
-		player.can_attack = true
-		if success:
-			state_machine.transition_to("attacking")
+		state_machine.transition_to("attacking")
 
 ## Called during the main frame update process. Currently does nothing.
 func update(_delta: float) -> void:
