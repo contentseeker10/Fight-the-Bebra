@@ -54,6 +54,7 @@ public class ClientUDP {
 
     public void sendRequest(Message request) throws IOException {
         byte[] requestBytes = Encoder.encode(request);
+        System.out.println("[CLIENT UDP] Sending packet to " + serverAddress + ":" + serverPort + " (bytes: " + requestBytes.length + ")");
         for (int retry = 0; retry <= MAX_RETRIES; retry++) {
             socket.send(new DatagramPacket(requestBytes, requestBytes.length, serverAddress, serverPort));
         }

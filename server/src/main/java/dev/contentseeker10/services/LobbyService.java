@@ -35,6 +35,20 @@ public class LobbyService {
         return new CreateLobbyResponseDTO(true, "", code);
     }
 
+    public boolean startGame(String lobbyCode) {
+        Lobby lobby = activeLobbies.get(lobbyCode);
+        if (lobby == null || lobby.getGuest() == null || lobby.getType() != LobbyType.WAITING) {
+            return false;
+        }
+        synchronized (lobby) {
+            if (lobby.getGuest() == null || lobby.getType() != LobbyType.WAITING) {
+                return false;
+            }
+            lobby.setType(LobbyType.IN_GAME);
+            return true;
+        }
+    }
+
     public JoinLobbyResponseDTO joinLobby(String lobbyCode, User user) {
         Lobby lobby = activeLobbies.get(lobbyCode);
         if (lobby == null) {

@@ -15,7 +15,10 @@ import dev.contentseeker10.model.User;
 import dev.contentseeker10.model.type.UserType;
 import dev.contentseeker10.network.context.ConnectionContext;
 import dev.contentseeker10.network.context.RequestContext;
+import dev.contentseeker10.dto.game.*;
+import dev.contentseeker10.model.GameSession;
 import dev.contentseeker10.services.AuthorizationService;
+import dev.contentseeker10.services.GameService;
 import dev.contentseeker10.services.LobbyService;
 import dev.contentseeker10.services.SessionService;
 
@@ -26,6 +29,7 @@ public class Processor implements Runnable {
     private static final AuthorizationService authorizationService = AuthorizationService.getInstance();
     private static final SessionService sessionService = SessionService.getInstance();
     private static final LobbyService lobbyService = LobbyService.getInstance();
+    private static final GameService gameService = GameService.getInstance();
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -55,6 +59,10 @@ public class Processor implements Runnable {
             case UPDATE_LOBBY -> processUpdateLobby();
             case LEAVE_LOBBY -> processLeaveLobby(data, context);
 
+            case START_GAME -> processStartGame(data, context);
+            case HANDSHAKE -> processUdpHandshake(data, context);
+            case GAME_INPUT -> processGameInput(data, context);
+
             default -> "{'response': 'ServerTCP Error'}";
         };
 
@@ -65,6 +73,97 @@ public class Processor implements Runnable {
             outputQueue.put(new RequestContext<>(responseMessage, requestContext.getConnection()));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String processStartGame(String data, ConnectionContext context) {
+        try {
+            StartGameRequestDTO request = mapper.readValue(data, StartGameRequestDTO.class);
+            String lobbyCode = request.lobbyCode();
+            User admin = sessionService.getSessionUser(context);
+            
+            if (admin == null || !admin.equals(lobbyService.getLobbyAdmin(lobbyCode))) {
+                return mapper.writeValueAsString(new StartGameResponseDTO(false, "Unauthorized: only admin can start game", "", 0));
+            }
+            
+            boolean success = lobbyService.startGame(lobbyCode);
+            if (!success) {
+                return mapper.writeValueAsString(new StartGameResponseDTO(false, "Failed to start game: lobby not ready", "", 0));
+            }
+            
+            User guest = lobbyService.getLobbyGuest(lobbyCode);
+            if (guest == null) {
+                return mapper.writeValueAsString(new StartGameResponseDTO(false, "Failed to start game: lobby has no guest", "", 0));
+            }
+            
+            GameSession session = gameService.createSession(lobbyCode, admin.getId(), guest.getId());
+            
+            // Send push to guest over TCP
+            ConnectionContext guestContext = sessionService.getSession(guest);
+            if (guestContext != null) {
+                StartGameResponseDTO guestResponse = new StartGameResponseDTO(true, "", session.getGuestToken(), 9091);
+                String guestResponseStr = mapper.writeValueAsString(guestResponse);
+                sendSingleUpdate(CommandType.START_GAME, guestResponseStr, guestContext);
+            }
+            
+            // Return response for admin
+            StartGameResponseDTO adminResponse = new StartGameResponseDTO(true, "", session.getAdminToken(), 9091);
+            return mapper.writeValueAsString(adminResponse);
+            
+        } catch (Exception e) {
+            System.err.println("[SERVER] Error processing start game: " + e.getMessage());
+            try {
+                return mapper.writeValueAsString(new StartGameResponseDTO(false, "Internal server error: " + e.getMessage(), "", 0));
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    private String processUdpHandshake(String data, ConnectionContext context) {
+        if (!(context instanceof dev.contentseeker10.network.context.UdpConnectionContext udpContext)) {
+            return "{\"success\":false,\"error\":\"Not a UDP connection\"}";
+        }
+        try {
+            UdpHandshakeDTO handshake = mapper.readValue(data, UdpHandshakeDTO.class);
+            boolean success = gameService.registerUdpAddress(handshake.userId(), handshake.token(), udpContext);
+            if (success) {
+                System.out.println("[SERVER UDP] Authorized UDP address for userId: " + handshake.userId());
+                return "{\"success\":true}";
+            } else {
+                System.out.println("[SERVER UDP] Authorization failed for userId: " + handshake.userId());
+                return "{\"success\":false,\"error\":\"Invalid token or session\"}";
+            }
+        } catch (Exception e) {
+            System.err.println("[SERVER UDP] Error processing handshake: " + e.getMessage());
+            return "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}";
+        }
+    }
+
+    private String processGameInput(String data, ConnectionContext context) {
+        if (!(context instanceof dev.contentseeker10.network.context.UdpConnectionContext udpContext)) {
+            return "{\"success\":false,\"error\":\"Not a UDP connection\"}";
+        }
+        try {
+            Integer senderId = gameService.getUserIdByUdpContext(udpContext);
+            if (senderId == null) {
+                System.err.println("[SERVER UDP] Game input received from unauthorized UDP address: " + udpContext.getClientAddress() + ":" + udpContext.getClientPort());
+                return "{\"success\":false,\"error\":\"Unauthorized UDP address\"}";
+            }
+
+            PlayerInputDTO input = mapper.readValue(data, PlayerInputDTO.class);
+            dev.contentseeker10.network.context.UdpConnectionContext teammateUdp = gameService.getTeammateUdpContext(senderId);
+            
+            if (teammateUdp != null) {
+                PlayerStateDTO state = new PlayerStateDTO(senderId, input.x(), input.y(), input.hp(), input.isAttacking());
+                String stateJson = mapper.writeValueAsString(state);
+                sendSingleUpdate(CommandType.GAME_STATE, stateJson, teammateUdp);
+            }
+
+            return "{\"success\":true}";
+        } catch (Exception e) {
+            System.err.println("[SERVER UDP] Error processing game input: " + e.getMessage());
+            return "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}";
         }
     }
 

@@ -76,16 +76,19 @@ public class BridgeTCP implements Runnable {
 
                     String json;
                     while ((json = reader.readLine()) != null) {
+                        System.out.println("[BRIDGE] Received from Godot: " + json);
                         Message message = buildRequest(json);
                         CommandType cmd = CommandType.fromCode(message.getPayload().getCmdType());
                         if (cmd == CommandType.HANDSHAKE || cmd == CommandType.GAME_INPUT || cmd == CommandType.GAME_STATE) {
+                            System.out.println("[BRIDGE] Routing to UDP: " + cmd);
                             udpClient.sendRequest(message);
                         } else {
+                            System.out.println("[BRIDGE] Routing to TCP: " + cmd);
                             tcpClient.sendRequest(message);
                         }
                     }
                 } catch (IOException e) {
-                    System.err.println("[BRIDGE] Game tcpClient disconnected: " + e.getMessage());
+                    System.err.println("[BRIDGE] Game Client disconnected: " + e.getMessage());
                     gameOutput = null;
                     tcpClient.closeSocket();
                 }
@@ -127,6 +130,10 @@ public class BridgeTCP implements Runnable {
             case 6 -> "LEAVE_LOBBY";
 
             case 7 -> "START_GAME";
+            
+            case 8 -> "HANDSHAKE";
+            case 9 -> "GAME_INPUT";
+            case 10 -> "GAME_STATE";
 
             default -> "UNKNOWN";
         };

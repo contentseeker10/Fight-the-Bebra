@@ -34,6 +34,12 @@ func get_direction_name() -> String:
 func _ready() -> void:
 	await owner.ready
 	
+	if owner.is_remote:
+		set_process(false)
+		set_physics_process(false)
+		set_process_unhandled_input(false)
+		return
+		
 	for child in get_children():
 		if child is PlayerState:
 			states[child.name.to_lower()] = child

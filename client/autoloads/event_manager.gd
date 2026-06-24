@@ -28,6 +28,9 @@ extends Node
 @warning_ignore("unused_signal") signal leave_lobby_requested(lobby_code: String)
 @warning_ignore("unused_signal") signal leave_lobby_completed(success: bool, error: String)
 
+@warning_ignore("unused_signal") signal match_started(success: bool, error: String, udp_token: String, udp_port: int)
+@warning_ignore("unused_signal") signal teammate_state_updated(x: float, y: float, hp: int, is_attacking: bool)
+
 #endregion
 
 

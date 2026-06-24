@@ -17,6 +17,19 @@ func _ready() -> void:
 	
 	EventManager.leave_lobby_requested.connect(_on_leave_lobby_requested)
 	EventManager.leave_lobby_completed.connect(_on_leave_lobby_completed)
+	
+	EventManager.match_started.connect(_on_match_started)
+
+func _on_match_started(success: bool, error: String, udp_token: String, _udp_port: int) -> void:
+	if success:
+		get_tree().change_scene_to_file("res://parts/location/location.tscn")
+		await get_tree().create_timer(0.2).timeout
+		NetworkManager.send_request(NetworkManager.CommandType.HANDSHAKE, {
+			"userId": AccountManager.current_user.id,
+			"token": udp_token
+		})
+	else:
+		printerr("Failed to start match: ", error)
 
 
 func _on_create_lobby_requested() -> void:

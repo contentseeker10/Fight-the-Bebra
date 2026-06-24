@@ -31,8 +31,8 @@ func _update_ui() -> void:
 
 
 func _on_start_button_pressed() -> void:
-	# TODO: Call to Java client over NetworkManager (GAME SESSION STARTED)
-	get_tree().change_scene_to_file("res://parts/location/location.tscn")
+	start_button.disabled = true
+	NetworkManager.send_request(NetworkManager.CommandType.START_GAME, { "lobbyCode": LobbyManager.code })
 
 
 func _on_exit_button_pressed() -> void:

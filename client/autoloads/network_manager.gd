@@ -17,7 +17,11 @@ enum CommandType {
 	UPDATE_LOBBY,
 	LEAVE_LOBBY,
 	
-	START_GAME
+	START_GAME,
+	
+	HANDSHAKE,
+	GAME_INPUT,
+	GAME_STATE
 }
 
 
@@ -48,6 +52,9 @@ func send_request(command: CommandType, request: Dictionary) -> void:
 #endregion
 
 
+var _receive_buffer: String = ""
+
+
 #region Bridge to Java Client
 
 func _process_bridge() -> void:
@@ -59,11 +66,35 @@ func _process_bridge() -> void:
 		_connect_bridge()
 
 func _process_response() -> void:
-	var json := bridge.get_utf8_string(bridge.get_available_bytes())
-	var data: Dictionary = JSON.parse_string(json)
+	var chunk := bridge.get_utf8_string(bridge.get_available_bytes())
+	_receive_buffer += chunk
+	
+	while "\n" in _receive_buffer:
+		var parts := _receive_buffer.split("\n", true, 1)
+		var line := parts[0].strip_edges()
+		_receive_buffer = parts[1] if parts.size() > 1 else ""
+		
+		if line.is_empty():
+			continue
+			
+		var data = JSON.parse_string(line)
+		if typeof(data) != TYPE_DICTIONARY:
+			continue
+			
+		_handle_single_response(data)
+
+func _handle_single_response(data: Dictionary) -> void:
 	var command_type := _parse_command_str(data.get("command", "UNKNOWN"))
-	var response: Dictionary = JSON.parse_string(data.get("response", {}))
-	print(data)
+	var resp_node = data.get("response", {})
+	var response: Dictionary
+	if typeof(resp_node) == TYPE_STRING:
+		response = JSON.parse_string(resp_node)
+	elif typeof(resp_node) == TYPE_DICTIONARY:
+		response = resp_node
+	else:
+		response = {}
+		
+	print("Received from bridge: ", command_type, " -> ", response)
 	if response.is_empty() or command_type == CommandType.UNKNOWN:
 		printerr("Bad Response: ", data)
 		return
@@ -99,6 +130,26 @@ func _process_response() -> void:
 		
 		CommandType.LEAVE_LOBBY: 
 			EventManager.leave_lobby_completed.emit(success, error)
+			
+		CommandType.START_GAME:
+			var udp_token: String = response.get("udpToken", "")
+			var udp_port: int = response.get("udpPort", 9091)
+			EventManager.match_started.emit(success, error, udp_token, udp_port)
+			
+		CommandType.HANDSHAKE:
+			if success:
+				print("[NETWORK] UDP Handshake successful!")
+			else:
+				printerr("[NETWORK] UDP Handshake failed: ", error)
+				
+		CommandType.GAME_STATE:
+			var user_id: int = response.get("userId", 0)
+			if user_id != AccountManager.current_user.id:
+				var x: float = response.get("x", 0.0)
+				var y: float = response.get("y", 0.0)
+				var hp: int = response.get("hp", 100)
+				var is_attacking: bool = response.get("isAttacking", false)
+				EventManager.teammate_state_updated.emit(x, y, hp, is_attacking)
 
 
 
@@ -140,6 +191,10 @@ func _parse_command(command: CommandType) -> String:
 		CommandType.JOIN_LOBBY: return "JOIN_LOBBY"
 		CommandType.UPDATE_LOBBY: return "UPDATE_LOBBY"
 		CommandType.LEAVE_LOBBY: return "LEAVE_LOBBY"
+		CommandType.START_GAME: return "START_GAME"
+		CommandType.HANDSHAKE: return "HANDSHAKE"
+		CommandType.GAME_INPUT: return "GAME_INPUT"
+		CommandType.GAME_STATE: return "GAME_STATE"
 	return "UNKNOWN"
 
 func _parse_command_str(command: String) -> CommandType:
@@ -151,6 +206,10 @@ func _parse_command_str(command: String) -> CommandType:
 		"JOIN_LOBBY": return CommandType.JOIN_LOBBY
 		"UPDATE_LOBBY": return CommandType.UPDATE_LOBBY
 		"LEAVE_LOBBY": return CommandType.LEAVE_LOBBY
+		"START_GAME": return CommandType.START_GAME
+		"HANDSHAKE": return CommandType.HANDSHAKE
+		"GAME_INPUT": return CommandType.GAME_INPUT
+		"GAME_STATE": return CommandType.GAME_STATE
 	return CommandType.UNKNOWN
 
 func _init_timer(wait_time: float) -> Timer:
