@@ -4,13 +4,16 @@ import dev.contentseeker10.message.Message;
 import dev.contentseeker10.network.context.ConnectionContext;
 import dev.contentseeker10.network.context.RequestContext;
 import dev.contentseeker10.network.tcp.ServerTCP;
+import dev.contentseeker10.network.udp.ServerUDP;
 import dev.contentseeker10.server.pipeline.Decryptor;
 import dev.contentseeker10.server.pipeline.Encryptor;
 import dev.contentseeker10.server.pipeline.Processor;
 import dev.contentseeker10.server.pipeline.Sender;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,10 @@ public class ServerManager {
     private ServerTCP tcpServer;
     private Thread tcpServerThread;
 
+    private static final int UDP_PORT = 9091;
+    private ServerUDP udpServer;
+    private Thread udpServerThread;
+
     private final BlockingQueue<RequestContext<byte[]>> rawQueue = new LinkedBlockingQueue<>(1000);
     private final BlockingQueue<RequestContext<Message>> decodedQueue = new LinkedBlockingQueue<>(1000);
     private final BlockingQueue<RequestContext<Message>> responseQueue = new LinkedBlockingQueue<>(1000);
@@ -39,7 +46,7 @@ public class ServerManager {
         System.out.println("[SERVER] Starting server...");
 
         try {
-            System.out.println("[SERVER] Starting TCP server..");
+            System.out.println("[SERVER] Starting TCP server...");
             ServerSocket serverSocket = new ServerSocket(TCP_PORT);
             System.out.println("[SERVER] TCP Server: " + serverSocket);
             tcpServer = new ServerTCP(serverSocket);
@@ -47,6 +54,17 @@ public class ServerManager {
             tcpServerThread.start();
         } catch (IOException e) {
             System.err.println("Unable to start TCP server: " + e.getMessage());
+        }
+
+        try {
+            System.out.println("[SERVER] Starting UDP server...");
+            DatagramSocket datagramSocket = new DatagramSocket(UDP_PORT);
+            System.out.println("[SERVER] UDP Server: " + datagramSocket);
+            udpServer = new ServerUDP(datagramSocket, UDP_PORT);
+            udpServerThread = new Thread(udpServer, "UDP-Server-Acceptor");
+            udpServerThread.start();
+        } catch (IOException e) {
+            System.err.println("Unable to start UDP server: " + e.getMessage());
         }
         
         startDecryptors(decryptors);
@@ -98,6 +116,7 @@ public class ServerManager {
 
         stopTasks();
         stopTcpServer();
+        stopUdpServer();
 
         System.out.println("[SERVER] Server is stopped.");
     }
@@ -127,6 +146,21 @@ public class ServerManager {
             tcpServerThread.interrupt();
             try {
                 tcpServerThread.join(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void stopUdpServer() {
+        if (udpServer != null) {
+            System.out.println("[SERVER] Stopping UDP server...");
+            udpServer.stop();
+        }
+        if (udpServerThread != null) {
+            udpServerThread.interrupt();
+            try {
+                udpServerThread.join(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
