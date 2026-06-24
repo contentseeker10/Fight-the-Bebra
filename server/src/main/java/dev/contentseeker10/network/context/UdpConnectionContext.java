@@ -34,4 +34,22 @@ public class UdpConnectionContext implements ConnectionContext {
     public int getClientPort() {
         return clientPort;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UdpConnectionContext that = (UdpConnectionContext) o;
+
+        if (clientPort != that.clientPort) return false;
+        return clientAddress != null ? clientAddress.equals(that.clientAddress) : that.clientAddress == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = clientAddress != null ? clientAddress.hashCode() : 0;
+        result = 31 * result + clientPort;
+        return result;
+    }
 }
