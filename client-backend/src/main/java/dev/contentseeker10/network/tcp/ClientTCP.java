@@ -1,6 +1,7 @@
 package dev.contentseeker10.network.tcp;
 
 import dev.contentseeker10.message.Message;
+import dev.contentseeker10.network.ResponseListener;
 import dev.contentseeker10.network.coders.Decoder;
 import dev.contentseeker10.network.coders.Encoder;
 
@@ -21,10 +22,6 @@ public class ClientTCP {
     private static final int PORT = 9090;
 
     private Socket socket;
-
-    public interface ResponseListener {
-        void onResponse(Message message);
-    }
 
     public void listenResponses(ResponseListener listener) {
         new Thread(() -> {

@@ -12,7 +12,11 @@ public enum CommandType {
     UPDATE_LOBBY(5),
     LEAVE_LOBBY(6),
 
-    START_GAME(7);
+    START_GAME(7),
+
+    HANDSHAKE(8),
+    GAME_INPUT(9),
+    GAME_STATE(10);
 
 
     private final int code;
@@ -38,6 +42,10 @@ public enum CommandType {
             case 6 -> LEAVE_LOBBY;
 
             case 7 -> START_GAME;
+
+            case 8 -> HANDSHAKE;
+            case 9 -> GAME_INPUT;
+            case 10 -> GAME_STATE;
 
             default -> UNKNOWN;
         };

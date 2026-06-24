@@ -8,6 +8,7 @@ import dev.contentseeker10.message.CommandType;
 import dev.contentseeker10.message.Message;
 import dev.contentseeker10.message.Payload;
 import dev.contentseeker10.network.tcp.ClientTCP;
+import dev.contentseeker10.network.udp.ClientUDP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,13 +27,30 @@ public class BridgeTCP implements Runnable {
     }
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final ClientTCP client = ClientTCP.getInstance();
+
+    private static final ClientTCP tcpClient = ClientTCP.getInstance();
+    private static final ClientUDP udpClient = ClientUDP.getInstance();
 
     private volatile OutputStream gameOutput;
 
     @Override
     public void run() {
-        client.listenResponses(message -> {
+        tcpClient.listenResponses(message -> {
+            OutputStream os = gameOutput;
+            if (os != null) {
+                try {
+                    byte[] responseBytes = buildResponse(message);
+                    synchronized (os) {
+                        os.write(responseBytes);
+                        os.flush();
+                    }
+                } catch (IOException e) {
+                    System.err.println("[BRIDGE] Error sending message to Game Client: " + e.getMessage());
+                }
+            }
+        });
+
+        udpClient.listenResponses(message -> {
             OutputStream os = gameOutput;
             if (os != null) {
                 try {
@@ -58,12 +76,18 @@ public class BridgeTCP implements Runnable {
 
                     String json;
                     while ((json = reader.readLine()) != null) {
-                        client.sendRequest(buildRequest(json));
+                        Message message = buildRequest(json);
+                        CommandType cmd = CommandType.fromCode(message.getPayload().getCmdType());
+                        if (cmd == CommandType.HANDSHAKE || cmd == CommandType.GAME_INPUT || cmd == CommandType.GAME_STATE) {
+                            udpClient.sendRequest(message);
+                        } else {
+                            tcpClient.sendRequest(message);
+                        }
                     }
                 } catch (IOException e) {
-                    System.err.println("[BRIDGE] Game client disconnected: " + e.getMessage());
+                    System.err.println("[BRIDGE] Game tcpClient disconnected: " + e.getMessage());
                     gameOutput = null;
-                    client.closeSocket();
+                    tcpClient.closeSocket();
                 }
             }
         } catch (IOException e) {

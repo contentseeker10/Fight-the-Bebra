@@ -24,19 +24,23 @@ public class ServerUDP implements Runnable {
     public void run() {
         try {
             byte[] buffer = new byte[65635];
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            serverSocket.receive(packet);
+            while (!Thread.currentThread().isInterrupted()) {
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                serverSocket.receive(packet);
 
-            byte[] data = new byte[packet.getLength()];
-            System.arraycopy(packet.getData(), 0, data, 0, packet.getLength());
+                byte[] data = new byte[packet.getLength()];
+                System.arraycopy(packet.getData(), 0, data, 0, packet.getLength());
 
-            ConnectionContext context = new UdpConnectionContext(serverSocket, packet.getAddress(), packet.getPort());
+                ConnectionContext context = new UdpConnectionContext(serverSocket, packet.getAddress(), packet.getPort());
 
-            ServerManager.getInstance().getRawQueue().put(new RequestContext<>(data, context));
-        } catch (SocketException | InterruptedException e) {
-            Thread.currentThread().interrupt();
+                ServerManager.getInstance().getRawQueue().put(new RequestContext<>(data, context));
+            }
+        } catch (SocketException _) {
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("[SERVER UDP] Error receiving packet: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
