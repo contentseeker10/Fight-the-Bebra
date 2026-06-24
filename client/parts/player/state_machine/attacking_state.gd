@@ -38,11 +38,11 @@ func _toggle_attack_area(state: bool) -> void:
 ## Plays the sequence of attack animations and associated sound effects.
 ## Waits for each animation to finish before proceeding or exiting.
 func _play_animations() -> void:
-	player.sprite.play("attack_1_" + state_machine.get_direction_name())
+	player.sprite.play("attack1_" + state_machine.get_direction_name())
 	AudioManager.play_sfx_2d(SWORD_ATTACK_1, player.global_position, 0.08, "SFX")
 	await player.sprite.animation_finished
 	
-	player.sprite.play("attack_2_" + state_machine.get_direction_name())
+	player.sprite.play("attack2_" + state_machine.get_direction_name())
 	AudioManager.play_sfx_2d(SWORD_ATTACK_2, player.global_position, 0.08, "SFX")
 	await player.sprite.animation_finished
 

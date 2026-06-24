@@ -85,7 +85,7 @@ func _on_teammate_state_updated(x: float, y: float, _hp: int, is_attacking: bool
 				teammate.sprite.play(anim)
 			
 	if is_attacking and not teammate_was_attacking:
-		var anim = "attack_1_" + teammate_dir
+		var anim = "attack1_" + teammate_dir
 		teammate.sprite.play(anim)
 		var sword_sfx = preload("res://assets/audio/player/Sword Attack 1.wav")
 		AudioManager.play_sfx_2d(sword_sfx, teammate.global_position, 0.08, "SFX")
@@ -95,9 +95,9 @@ func _on_teammate_state_updated(x: float, y: float, _hp: int, is_attacking: bool
 func _on_teammate_animation_finished() -> void:
 	if teammate and teammate.sprite.animation.begins_with("attack"):
 		var current_anim = teammate.sprite.animation
-		if current_anim.begins_with("attack_1_"):
-			var dir = current_anim.replace("attack_1_", "")
-			teammate.sprite.play("attack_2_" + dir)
+		if current_anim.begins_with("attack1_"):
+			var dir = current_anim.replace("attack1_", "")
+			teammate.sprite.play("attack2_" + dir)
 			var sword_sfx2 = preload("res://assets/audio/player/Sword Attack 2.wav")
 			AudioManager.play_sfx_2d(sword_sfx2, teammate.global_position, 0.08, "SFX")
 		else:

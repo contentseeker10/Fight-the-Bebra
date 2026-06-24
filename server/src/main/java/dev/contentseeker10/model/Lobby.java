@@ -44,4 +44,13 @@ public class Lobby {
         this.type = type;
     }
 
+    private int recordScore = 0;
+
+    public int getRecordScore() {
+        return recordScore;
+    }
+
+    public void setRecordScore(int recordScore) {
+        this.recordScore = recordScore;
+    }
 }

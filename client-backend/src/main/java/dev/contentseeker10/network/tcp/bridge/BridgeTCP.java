@@ -161,6 +161,7 @@ public class BridgeTCP implements Runnable {
 
             case 11 -> "SEND_MSG";
             case 12 -> "CHAT_MSG";
+            case 13 -> "END_GAME";
 
             default -> "UNKNOWN";
         };
