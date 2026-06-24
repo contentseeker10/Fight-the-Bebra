@@ -1,5 +1,6 @@
 package dev.contentseeker10.network.tcp.bridge;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.contentseeker10.dto.ResponseDTO;
@@ -27,8 +28,25 @@ public class BridgeTCP implements Runnable {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final ClientTCP client = ClientTCP.getInstance();
 
+    private volatile OutputStream gameOutput;
+
     @Override
     public void run() {
+        client.listenResponses(message -> {
+            OutputStream os = gameOutput;
+            if (os != null) {
+                try {
+                    byte[] responseBytes = buildResponse(message);
+                    synchronized (os) {
+                        os.write(responseBytes);
+                        os.flush();
+                    }
+                } catch (IOException e) {
+                    System.err.println("[BRIDGE] Error sending message to Game Client: " + e.getMessage());
+                }
+            }
+        });
+
         try (bridgeSocket) {
             while (true) {
                 try (Socket gameSocket = bridgeSocket.accept();
@@ -36,35 +54,40 @@ public class BridgeTCP implements Runnable {
                      OutputStream os = gameSocket.getOutputStream()) {
 
                     System.out.println("[BRIDGE] Game Client connected");
+                    gameOutput = os;
 
                     String json;
                     while ((json = reader.readLine()) != null) {
-                        JsonNode root = mapper.readTree(json);
-                        CommandType command = CommandType.valueOf(root.get("command").asText());
-
-                        JsonNode request = root.get("request");
-                        String data = request.toString();
-
-                        Payload payload = new Payload(command.getCode(), 0, data);
-                        Message message = new Message((byte) 0x13, (byte) 2, 0, payload);
-
-                        Message response = client.sendRequest(message);
-                        String commandStr = getResponseCommand(response.getPayload().getCmdType());
-                        String responseStr = response.getPayload().getData();
-
-                        String responseJson = mapper.writeValueAsString(new ResponseDTO(commandStr, responseStr));
-
-                        os.write((responseJson + "\n").getBytes(StandardCharsets.UTF_8));
-                        os.flush();
+                        client.sendRequest(buildRequest(json));
                     }
                 } catch (IOException e) {
                     System.err.println("[BRIDGE] Game client disconnected: " + e.getMessage());
+                    gameOutput = null;
                     client.closeSocket();
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private byte[] buildResponse(Message message) throws JsonProcessingException {
+        String commandStr = getResponseCommand(message.getPayload().getCmdType());
+        String responseStr = message.getPayload().getData();
+        String responseJson = mapper.writeValueAsString(new ResponseDTO(commandStr, responseStr)) + "\n";
+        return responseJson.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private Message buildRequest(String json) throws JsonProcessingException {
+        JsonNode root = mapper.readTree(json);
+        CommandType command = CommandType.valueOf(root.get("command").asText());
+
+        JsonNode request = root.get("request");
+        String data = request.toString();
+
+        Payload payload = new Payload(command.getCode(), 0, data);
+
+        return new Message((byte) 0x13, (byte) 2, 0, payload);
     }
 
     private String getResponseCommand(int command) {

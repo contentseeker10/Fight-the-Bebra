@@ -81,6 +81,7 @@ public class Processor implements Runnable {
     private String processCreateLobby(ConnectionContext context) {
         User user = sessionService.getSessionUser(context);
         CreateLobbyResponseDTO response = lobbyService.createLobby(user);
+        System.out.println("[SERVER] Create Lobby Requested" + " by " + sessionService.getSessionUser(context) + ", success: " + response.success());
         try {
             return mapper.writeValueAsString(response);
         } catch (JsonProcessingException e) {
@@ -107,6 +108,8 @@ public class Processor implements Runnable {
         }
 
         response = lobbyService.joinLobby(request.lobbyCode(), user);
+
+        System.out.println("[SERVER] Join Lobby Requested," + " by " + user + ", success: " + response.success());
 
         if (response.success()) {
             String updateData;
@@ -158,6 +161,8 @@ public class Processor implements Runnable {
         User guest = lobbyService.getLobbyGuest(request.lobbyCode());
 
         response = lobbyService.leaveLobby(request.lobbyCode(), user);
+
+        System.out.println("[SERVER] Leave Lobby Requested," + " by " + user + ", success: " + response.success());
 
         if (response.success()) {
             String updateData;

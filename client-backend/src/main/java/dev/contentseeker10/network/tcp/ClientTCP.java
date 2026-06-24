@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientTCP {
 
@@ -20,18 +22,51 @@ public class ClientTCP {
 
     private Socket socket;
 
-    public Message sendRequest(Message request) {
+    public interface ResponseListener {
+        void onResponse(Message message);
+    }
+
+    public void listenResponses(ResponseListener listener) {
+        new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                ensureConnection();
+                try (InputStream in = socket.getInputStream()) {
+                    while (!Thread.currentThread().isInterrupted() && socket != null && !socket.isClosed()) {
+                        Message responseMessage = Decoder.decode(readResponse(in));
+                        if (listener != null) {
+                            listener.onResponse(responseMessage);
+                        }
+                    }
+                } catch (IOException e) {
+                    System.out.println("[CLIENT] Server Listener Error: " + e.getMessage());
+                    closeSocket();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }, "Server-Listener").start();
+    }
+
+    private byte[] readResponse(InputStream in) throws IOException {
+        byte[] header = readExactBytes(in, 16);
+        int payloadLength = ByteBuffer.wrap(header).getInt(10);
+        byte[] body = readExactBytes(in, payloadLength + 2);
+        byte[] fullMessage = new byte[header.length + body.length];
+        System.arraycopy(header, 0, fullMessage, 0, header.length);
+        System.arraycopy(body, 0, fullMessage, header.length, body.length);
+        return fullMessage;
+    }
+
+    public void sendRequest(Message request) {
         ensureConnection();
-
         byte[] requestBytes = Encoder.encode(request);
-
         try {
             socket.getOutputStream().write(requestBytes);
             socket.getOutputStream().flush();
         } catch (IOException e) {
-
-            // TODO: Write status to game client via bridge, not just logging it
-
             System.err.println("[CLIENT] Error sending request. Attempting to reconnect...");
             closeSocket();
             ensureConnection();
@@ -41,23 +76,6 @@ public class ClientTCP {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-        }
-
-        try {
-            InputStream in = socket.getInputStream();
-
-            byte[] header = readExactBytes(in, 16);
-            int payloadLength = ByteBuffer.wrap(header).getInt(10);
-            byte[] body = readExactBytes(in, payloadLength + 2);
-            byte[] fullMessage = new byte[header.length + body.length];
-            System.arraycopy(header, 0, fullMessage, 0, header.length);
-            System.arraycopy(body, 0, fullMessage, header.length, body.length);
-
-            return Decoder.decode(fullMessage);
-        } catch (IOException e) {
-            System.err.println("[CLIENT] Error reading response. Closing connection.");
-            closeSocket();
-            throw new RuntimeException(e);
         }
     }
 
@@ -71,9 +89,6 @@ public class ClientTCP {
     }
 
     private void ensureConnection() {
-
-        // TODO: Write status to game client via bridge, not just logging it
-
         int delay = 1000;
         while (socket == null || socket.isClosed() || !socket.isConnected()) {
             try {
