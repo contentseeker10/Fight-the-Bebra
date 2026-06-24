@@ -21,12 +21,15 @@ enum CommandType {
 	
 	HANDSHAKE,
 	GAME_INPUT,
-	GAME_STATE
+	GAME_STATE,
+	
+	SERVER_STATUS
 }
 
 
 func _ready() -> void:
 	_connect_bridge()
+	EventManager.server_status_updated.emit("Connection lost", Color.RED)
 
 func _connect_bridge() -> void:
 	var err := bridge.connect_to_host(HOST, PORT)
@@ -139,8 +142,10 @@ func _handle_single_response(data: Dictionary) -> void:
 		CommandType.HANDSHAKE:
 			if success:
 				print("[NETWORK] UDP Handshake successful!")
+				EventManager.server_status_updated.emit("UDP: Connected", Color.WEB_GREEN)
 			else:
 				printerr("[NETWORK] UDP Handshake failed: ", error)
+				EventManager.server_status_updated.emit("UDP: Disconnected", Color.RED)
 				
 		CommandType.GAME_STATE:
 			var user_id: int = response.get("userId", 0)
@@ -150,6 +155,13 @@ func _handle_single_response(data: Dictionary) -> void:
 				var hp: int = response.get("hp", 100)
 				var is_attacking: bool = response.get("isAttacking", false)
 				EventManager.teammate_state_updated.emit(x, y, hp, is_attacking)
+				
+		CommandType.SERVER_STATUS:
+			var status: String = response.get("status", "CONNECTION_LOST")
+			if status == "CONNECTED":
+				EventManager.server_status_updated.emit("TCP: Connected", Color.WEB_GREEN)
+			else:
+				EventManager.server_status_updated.emit("Connection lost", Color.RED)
 
 
 
@@ -195,6 +207,7 @@ func _parse_command(command: CommandType) -> String:
 		CommandType.HANDSHAKE: return "HANDSHAKE"
 		CommandType.GAME_INPUT: return "GAME_INPUT"
 		CommandType.GAME_STATE: return "GAME_STATE"
+		CommandType.SERVER_STATUS: return "SERVER_STATUS"
 	return "UNKNOWN"
 
 func _parse_command_str(command: String) -> CommandType:
@@ -210,6 +223,7 @@ func _parse_command_str(command: String) -> CommandType:
 		"HANDSHAKE": return CommandType.HANDSHAKE
 		"GAME_INPUT": return CommandType.GAME_INPUT
 		"GAME_STATE": return CommandType.GAME_STATE
+		"SERVER_STATUS": return CommandType.SERVER_STATUS
 	return CommandType.UNKNOWN
 
 func _init_timer(wait_time: float) -> Timer:

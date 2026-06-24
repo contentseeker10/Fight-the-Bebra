@@ -10,6 +10,11 @@ extends CharacterBody2D
 var is_dead: bool = false
 var can_attack: bool = true
 
+func _ready() -> void:
+	if is_remote:
+		if has_node("Hud"):
+			$Hud.queue_free()
+
 ## Requests permission to perform an attack.
 func request_attack() -> bool:
 	return not is_dead and can_attack

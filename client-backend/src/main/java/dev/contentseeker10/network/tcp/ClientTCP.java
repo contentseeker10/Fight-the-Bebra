@@ -22,6 +22,24 @@ public class ClientTCP {
     private static final int PORT = 9090;
 
     private Socket socket;
+    
+    private volatile String currentStatus = "CONNECTION_LOST";
+    private java.util.function.Consumer<String> statusListener;
+
+    public void setStatusListener(java.util.function.Consumer<String> statusListener) {
+        this.statusListener = statusListener;
+    }
+
+    public String getCurrentStatus() {
+        return currentStatus;
+    }
+
+    private void notifyStatus(String status) {
+        this.currentStatus = status;
+        if (statusListener != null) {
+            statusListener.accept(status);
+        }
+    }
 
     public void listenResponses(ResponseListener listener) {
         new Thread(() -> {
@@ -36,6 +54,7 @@ public class ClientTCP {
                     }
                 } catch (IOException e) {
                     System.out.println("[CLIENT] Server Listener Error: " + e.getMessage());
+                    notifyStatus("CONNECTION_LOST");
                     closeSocket();
                     try {
                         Thread.sleep(1000);
@@ -65,6 +84,7 @@ public class ClientTCP {
             socket.getOutputStream().flush();
         } catch (IOException e) {
             System.err.println("[CLIENT] Error sending request. Attempting to reconnect...");
+            notifyStatus("CONNECTION_LOST");
             closeSocket();
             ensureConnection();
             try {
@@ -92,8 +112,10 @@ public class ClientTCP {
                 System.out.println("[CLIENT] Attempting to connect to server...");
                 socket = new Socket(HOST, PORT);
                 System.out.println("[CLIENT] Successfully connected.");
+                notifyStatus("CONNECTED");
             } catch (IOException e) {
                 System.out.println("[CLIENT] Server is unavailable. Retry in " + (delay / 1000) + " seconds...");
+                notifyStatus("CONNECTION_LOST");
                 try {
                     Thread.sleep(delay);
                 } catch (InterruptedException ie) {

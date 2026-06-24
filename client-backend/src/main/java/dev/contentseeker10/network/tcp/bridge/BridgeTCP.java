@@ -33,8 +33,29 @@ public class BridgeTCP implements Runnable {
 
     private volatile OutputStream gameOutput;
 
+    private void sendStatusToGame(String status) {
+        OutputStream os = gameOutput;
+        if (os != null) {
+            try {
+                String responseJson = mapper.writeValueAsString(new ResponseDTO("SERVER_STATUS", "{\"status\":\"" + status + "\"}")) + "\n";
+                byte[] bytes = responseJson.getBytes(StandardCharsets.UTF_8);
+                synchronized (os) {
+                    os.write(bytes);
+                    os.flush();
+                }
+            } catch (IOException e) {
+                System.err.println("[BRIDGE] Error sending status to Game Client: " + e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void run() {
+        tcpClient.setStatusListener(status -> {
+            System.out.println("[BRIDGE] Server connection status changed: " + status);
+            sendStatusToGame(status);
+        });
+
         tcpClient.listenResponses(message -> {
             OutputStream os = gameOutput;
             if (os != null) {
@@ -73,6 +94,9 @@ public class BridgeTCP implements Runnable {
 
                     System.out.println("[BRIDGE] Game Client connected");
                     gameOutput = os;
+                    
+                    // Immediately send current server status
+                    sendStatusToGame(tcpClient.getCurrentStatus());
 
                     String json;
                     while ((json = reader.readLine()) != null) {
