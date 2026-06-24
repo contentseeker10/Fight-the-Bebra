@@ -171,7 +171,7 @@ public class Processor implements Runnable {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            User userTo = user.getType() == UserType.ADMIN ? admin : guest;
+            User userTo = user.equals(admin) ? guest : admin;
             ConnectionContext to = sessionService.getSession(userTo);
             sendSingleUpdate(CommandType.UPDATE_LOBBY, updateData, to);
         }
