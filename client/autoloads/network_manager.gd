@@ -23,7 +23,9 @@ enum CommandType {
 	GAME_INPUT,
 	GAME_STATE,
 	
-	SERVER_STATUS
+	SERVER_STATUS,
+	SEND_MSG,
+	CHAT_MSG
 }
 
 
@@ -162,6 +164,11 @@ func _handle_single_response(data: Dictionary) -> void:
 				EventManager.server_status_updated.emit("TCP: Connected", Color.WEB_GREEN)
 			else:
 				EventManager.server_status_updated.emit("Connection lost", Color.RED)
+				
+		CommandType.CHAT_MSG:
+			var sender: String = response.get("sender", "unknown")
+			var message: String = response.get("message", "")
+			EventManager.chat_message_received.emit(sender, message)
 
 
 
@@ -208,6 +215,8 @@ func _parse_command(command: CommandType) -> String:
 		CommandType.GAME_INPUT: return "GAME_INPUT"
 		CommandType.GAME_STATE: return "GAME_STATE"
 		CommandType.SERVER_STATUS: return "SERVER_STATUS"
+		CommandType.SEND_MSG: return "SEND_MSG"
+		CommandType.CHAT_MSG: return "CHAT_MSG"
 	return "UNKNOWN"
 
 func _parse_command_str(command: String) -> CommandType:
@@ -224,6 +233,8 @@ func _parse_command_str(command: String) -> CommandType:
 		"GAME_INPUT": return CommandType.GAME_INPUT
 		"GAME_STATE": return CommandType.GAME_STATE
 		"SERVER_STATUS": return CommandType.SERVER_STATUS
+		"SEND_MSG": return CommandType.SEND_MSG
+		"CHAT_MSG": return CommandType.CHAT_MSG
 	return CommandType.UNKNOWN
 
 func _init_timer(wait_time: float) -> Timer:

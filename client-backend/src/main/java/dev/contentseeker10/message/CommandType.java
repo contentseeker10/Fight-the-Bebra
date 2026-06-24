@@ -16,7 +16,10 @@ public enum CommandType {
 
     HANDSHAKE(8),
     GAME_INPUT(9),
-    GAME_STATE(10);
+    GAME_STATE(10),
+    
+    SEND_MSG(11),
+    CHAT_MSG(12);
 
 
     private final int code;
@@ -46,6 +49,9 @@ public enum CommandType {
             case 8 -> HANDSHAKE;
             case 9 -> GAME_INPUT;
             case 10 -> GAME_STATE;
+            
+            case 11 -> SEND_MSG;
+            case 12 -> CHAT_MSG;
 
             default -> UNKNOWN;
         };

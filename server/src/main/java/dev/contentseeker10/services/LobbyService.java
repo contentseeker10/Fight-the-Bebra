@@ -122,6 +122,19 @@ public class LobbyService {
         return lobby != null ? lobby.getGuest() : null;
     }
 
+    public Lobby findUserLobby(User user) {
+        if (user == null) return null;
+        for (Lobby lobby : activeLobbies.values()) {
+            synchronized (lobby) {
+                if ((lobby.getAdmin() != null && lobby.getAdmin().equals(user)) ||
+                    (lobby.getGuest() != null && lobby.getGuest().equals(user))) {
+                    return lobby;
+                }
+            }
+        }
+        return null;
+    }
+
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
 

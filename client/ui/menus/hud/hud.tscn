@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://bp0at5f34iayj"]
+[gd_scene load_steps=3 format=3 uid="uid://bp0at5f34iayj"]
+
+[ext_resource type="PackedScene" uid="uid://b2uk5sr33nmne" path="res://ui/components/network_statuses/network_statuses.tscn" id="1_net"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ts8fk"]
 bg_color = Color(0.38637522, 0.3495529, 0.9619189, 1)
@@ -7,6 +9,8 @@ border_width_top = 1
 border_width_bottom = 1
 
 [node name="Hud" type="CanvasLayer" unique_id=1493100050]
+
+[node name="NetworkStatuses" parent="." instance=ExtResource("1_net")]
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=11002105]
 anchors_preset = 15

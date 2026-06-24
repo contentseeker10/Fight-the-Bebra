@@ -63,6 +63,8 @@ public class Processor implements Runnable {
             case HANDSHAKE -> processUdpHandshake(data, context);
             case GAME_INPUT -> processGameInput(data, context);
 
+            case SEND_MSG -> processSendMsg(data, context);
+
             default -> "{'response': 'ServerTCP Error'}";
         };
 
@@ -163,6 +165,45 @@ public class Processor implements Runnable {
             return "{\"success\":true}";
         } catch (Exception e) {
             System.err.println("[SERVER UDP] Error processing game input: " + e.getMessage());
+            return "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}";
+        }
+    }
+
+    private String processSendMsg(String data, ConnectionContext context) {
+        User sender = sessionService.getSessionUser(context);
+        if (sender == null) {
+            return "{\"success\":false,\"error\":\"Unauthorized\"}";
+        }
+
+        dev.contentseeker10.model.Lobby lobby = lobbyService.findUserLobby(sender);
+        if (lobby == null) {
+            return "{\"success\":false,\"error\":\"Lobby not found\"}";
+        }
+
+        try {
+            String messageText = mapper.readTree(data).get("message").asText();
+            
+            // Broadcast message to everyone in the lobby
+            String chatPayload = mapper.writeValueAsString(java.util.Map.of(
+                "sender", sender.getUsername(),
+                "message", messageText
+            ));
+
+            User admin = lobby.getAdmin();
+            User guest = lobby.getGuest();
+
+            if (admin != null) {
+                ConnectionContext c = sessionService.getSession(admin);
+                if (c != null) sendSingleUpdate(CommandType.CHAT_MSG, chatPayload, c);
+            }
+            if (guest != null) {
+                ConnectionContext c = sessionService.getSession(guest);
+                if (c != null) sendSingleUpdate(CommandType.CHAT_MSG, chatPayload, c);
+            }
+
+            return "{\"success\":true}";
+        } catch (Exception e) {
+            System.err.println("[SERVER] Error processing send message: " + e.getMessage());
             return "{\"success\":false,\"error\":\"" + e.getMessage() + "\"}";
         }
     }
