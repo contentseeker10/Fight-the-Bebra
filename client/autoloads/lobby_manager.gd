@@ -59,8 +59,8 @@ func _on_update_lobby_completed(success: bool, error: String, users: Array) -> v
 			# WARNING: Only for UI purposes, access control is still onto server
 			if AccountManager.current_user.type == User.UserType.GUEST:
 				AccountManager.current_user.type = User.UserType.ADMIN
-				guest = null
 				admin = AccountManager.current_user
+			guest = null
 			EventManager.player_left.emit()
 	else:
 		printerr(error)
