@@ -45,4 +45,4 @@ func _on_guest_joined(_guest: User) -> void:
 
 
 func _on_player_left() -> void:
-	pass
+	_update_ui()
