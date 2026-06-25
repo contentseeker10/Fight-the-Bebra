@@ -1,6 +1,7 @@
 extends Control
 
 @onready var room_code: Label = $CenterContainer/VBoxContainer/RoomCode
+@onready var room_score: Label = $CenterContainer/VBoxContainer/RoomScore
 @onready var start_button: Button = $CenterContainer/VBoxContainer/VBoxContainer2/StartButton
 @onready var player_count: Label = $CenterContainer/VBoxContainer/VBoxContainer/PlayerCount
 @onready var admin_username: Label = $CenterContainer/VBoxContainer/VBoxContainer/AdminUsername
@@ -32,6 +33,7 @@ func _ready() -> void:
 
 func _update_ui() -> void:
 	room_code.text = LobbyManager.code
+	room_score.text = "Room score record: " + str(LobbyManager.record_score)
 	
 	admin_username.text = LobbyManager.admin.username
 	

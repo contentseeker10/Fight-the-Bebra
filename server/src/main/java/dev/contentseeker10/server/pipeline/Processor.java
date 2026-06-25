@@ -64,6 +64,7 @@ public class Processor implements Runnable {
             case GAME_INPUT -> processGameInput(data, context);
 
             case SEND_MSG -> processSendMsg(data, context);
+            case END_GAME -> processEndGame(data, context);
 
             default -> "{'response': 'ServerTCP Error'}";
         };
@@ -208,6 +209,68 @@ public class Processor implements Runnable {
         }
     }
 
+    private String processEndGame(String data, ConnectionContext context) {
+        User user = sessionService.getSessionUser(context);
+        if (user == null) {
+            return "{\"success\":false,\"error\":\"Unauthorized\"}";
+        }
+
+        try {
+            EndGameRequestDTO request = mapper.readValue(data, EndGameRequestDTO.class);
+            String lobbyCode = request.lobbyCode();
+            
+            dev.contentseeker10.model.Lobby lobby = lobbyService.findUserLobby(user);
+            if (lobby == null || !lobby.getCode().equals(lobbyCode)) {
+                return mapper.writeValueAsString(new EndGameResponseDTO(false, "Lobby not found", 0, null, null));
+            }
+            
+            if (!user.equals(lobby.getAdmin())) {
+                return mapper.writeValueAsString(new EndGameResponseDTO(false, "Unauthorized: only admin can end game", 0, null, null));
+            }
+
+            synchronized (lobby) {
+                lobby.setType(dev.contentseeker10.model.type.LobbyType.WAITING);
+                int sessionScore = request.adminScore() + request.guestScore();
+                lobby.setRecordScore(lobby.getRecordScore() + sessionScore);
+            }
+
+            User admin = lobby.getAdmin();
+            User guest = lobby.getGuest();
+
+            if (request.adminScore() > admin.getRecordScore()) {
+                admin.setRecordScore(request.adminScore());
+                authorizationService.updateRecordScore(admin.getId(), request.adminScore());
+            }
+            if (guest != null && request.guestScore() > guest.getRecordScore()) {
+                guest.setRecordScore(request.guestScore());
+                authorizationService.updateRecordScore(guest.getId(), request.guestScore());
+            }
+
+            gameService.cleanSession(admin.getId());
+
+            UserDTO adminDTO = new UserDTO(admin);
+            UserDTO guestDTO = guest != null ? new UserDTO(guest) : null;
+            EndGameResponseDTO response = new EndGameResponseDTO(true, "", lobby.getRecordScore(), adminDTO, guestDTO);
+            String responseStr = mapper.writeValueAsString(response);
+
+            if (guest != null) {
+                ConnectionContext guestContext = sessionService.getSession(guest);
+                if (guestContext != null) {
+                    sendSingleUpdate(CommandType.END_GAME, responseStr, guestContext);
+                }
+            }
+
+            return responseStr;
+        } catch (Exception e) {
+            System.err.println("[SERVER] Error processing end game: " + e.getMessage());
+            try {
+                return mapper.writeValueAsString(new EndGameResponseDTO(false, "Internal server error: " + e.getMessage(), 0, null, null));
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
     private void sendSingleUpdate(CommandType type, String data, ConnectionContext to) {
         Payload updatePayload = new Payload(type.getCode(), 0, data);
         Message updateMessage = new Message((byte) 0x13, (byte) 1, 0, updatePayload);
@@ -240,7 +303,7 @@ public class Processor implements Runnable {
             request = mapper.readValue(data, JoinLobbyRequestDTO.class);
         } catch (JsonProcessingException e) {
             try {
-                responseStr = mapper.writeValueAsString(new JoinLobbyResponseDTO(false, "Bad Request", null));
+                responseStr = mapper.writeValueAsString(new JoinLobbyResponseDTO(false, "Bad Request", null, 0));
                 return responseStr;
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
@@ -254,7 +317,9 @@ public class Processor implements Runnable {
         if (response.success()) {
             String updateData;
             try {
-                updateData = mapper.writeValueAsString(new UpdateLobbyResponseDTO(true, "", new UserDTO[]{new UserDTO(user)}));
+                dev.contentseeker10.model.Lobby lobby = lobbyService.findUserLobby(user);
+                int recordScore = lobby != null ? lobby.getRecordScore() : 0;
+                updateData = mapper.writeValueAsString(new UpdateLobbyResponseDTO(true, "", new UserDTO[]{new UserDTO(user)}, recordScore));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -273,7 +338,7 @@ public class Processor implements Runnable {
 
     private String processUpdateLobby() {
         try {
-            return mapper.writeValueAsString(new UpdateLobbyResponseDTO(false, "Server Not Ready", null));
+            return mapper.writeValueAsString(new UpdateLobbyResponseDTO(false, "Server Not Ready", null, 0));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -299,6 +364,8 @@ public class Processor implements Runnable {
 
         User admin = lobbyService.getLobbyAdmin(request.lobbyCode());
         User guest = lobbyService.getLobbyGuest(request.lobbyCode());
+        dev.contentseeker10.model.Lobby lobby = lobbyService.findUserLobby(user);
+        int recordScore = lobby != null ? lobby.getRecordScore() : 0;
 
         response = lobbyService.leaveLobby(request.lobbyCode(), user);
 
@@ -307,7 +374,7 @@ public class Processor implements Runnable {
         if (response.success()) {
             String updateData;
             try {
-                updateData = mapper.writeValueAsString(new UpdateLobbyResponseDTO(true, "", new UserDTO[]{}));
+                updateData = mapper.writeValueAsString(new UpdateLobbyResponseDTO(true, "", new UserDTO[]{}, recordScore));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

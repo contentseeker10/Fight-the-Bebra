@@ -82,6 +82,17 @@ public class AuthorizationService {
         return new AuthResponseDTO(true, "", user);
     }
 
+    public void updateRecordScore(int userId, int newScore) {
+        String sql = "UPDATE users SET record_score = ? WHERE id = ?";
+        try (Connection connection = db.getConnection(); PreparedStatement pst = connection.prepareStatement(sql)) {
+            pst.setInt(1, newScore);
+            pst.setInt(2, userId);
+            pst.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[SERVER] Error updating record score for user " + userId + ": " + e.getMessage());
+        }
+    }
+
     private boolean validateUsername(String username) {
         // TODO: validation of username
         return true;

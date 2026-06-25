@@ -2,9 +2,10 @@ package dev.contentseeker10.dto.lobby;
 
 import dev.contentseeker10.dto.UserDTO;
 
-public record UpdateLobbyResponseDTO(
+public record EndGameResponseDTO(
     boolean success,
     String error,
-    UserDTO[] users,
-    int recordScore
+    int recordScore,
+    UserDTO admin,
+    UserDTO guest
 ) {}

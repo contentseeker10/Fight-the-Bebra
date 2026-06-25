@@ -30,7 +30,8 @@ enum CommandType {
 	
 	SERVER_STATUS,
 	SEND_MSG,
-	CHAT_MSG
+	CHAT_MSG,
+	END_GAME
 }
 
 
@@ -125,12 +126,15 @@ func _handle_single_response(data: Dictionary) -> void:
 			EventManager.login_completed.emit(success, error, user)
 		
 		CommandType.CREATE_LOBBY:
+			if success:
+				LobbyManager.record_score = response.get("recordScore", 0)
 			EventManager.create_lobby_completed.emit(success, error, response.get("code", "error"))
 		
 		CommandType.JOIN_LOBBY:
 			var admin: User
 			if success: 
 				admin = User.new(response.get("admin", {}))
+				LobbyManager.record_score = response.get("recordScore", 0)
 			EventManager.join_lobby_completed.emit(success, error, admin)
 		
 		CommandType.UPDATE_LOBBY: 
@@ -138,6 +142,8 @@ func _handle_single_response(data: Dictionary) -> void:
 				printerr("Error updating lobby")
 				return
 			var users: Array = response.get("users", [])
+			if response.has("recordScore"):
+				LobbyManager.record_score = response.get("recordScore", 0)
 			EventManager.update_lobby_completed.emit(success, error, users)
 		
 		CommandType.LEAVE_LOBBY: 
@@ -182,6 +188,22 @@ func _handle_single_response(data: Dictionary) -> void:
 			var sender: String = response.get("sender", "unknown")
 			var message: String = response.get("message", "")
 			EventManager.chat_message_received.emit(sender, message)
+			
+		CommandType.END_GAME:
+			var room_record: int = response.get("recordScore", 0)
+			var admin_node = response.get("admin", {})
+			var guest_node = response.get("guest", {})
+			if success:
+				LobbyManager.record_score = room_record
+				if LobbyManager.admin and not admin_node.is_empty():
+					LobbyManager.admin.record_score = admin_node.get("recordScore", 0)
+				if LobbyManager.guest and not guest_node.is_empty():
+					LobbyManager.guest.record_score = guest_node.get("recordScore", 0)
+				if AccountManager.current_user.id == LobbyManager.admin.id and not admin_node.is_empty():
+					AccountManager.current_user.record_score = admin_node.get("recordScore", 0)
+				elif LobbyManager.guest and AccountManager.current_user.id == LobbyManager.guest.id and not guest_node.is_empty():
+					AccountManager.current_user.record_score = guest_node.get("recordScore", 0)
+			EventManager.match_ended.emit(success, error)
 
 
 
@@ -232,6 +254,7 @@ func _parse_command(command: CommandType) -> String:
 		CommandType.SERVER_STATUS: return "SERVER_STATUS"
 		CommandType.SEND_MSG: return "SEND_MSG"
 		CommandType.CHAT_MSG: return "CHAT_MSG"
+		CommandType.END_GAME: return "END_GAME"
 	return "UNKNOWN"
 
 func _parse_command_str(command: String) -> CommandType:
@@ -250,6 +273,7 @@ func _parse_command_str(command: String) -> CommandType:
 		"SERVER_STATUS": return CommandType.SERVER_STATUS
 		"SEND_MSG": return CommandType.SEND_MSG
 		"CHAT_MSG": return CommandType.CHAT_MSG
+		"END_GAME": return CommandType.END_GAME
 	return CommandType.UNKNOWN
 
 func _init_timer(wait_time: float) -> Timer:

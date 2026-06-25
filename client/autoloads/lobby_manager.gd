@@ -4,6 +4,7 @@ var code: String
 
 var admin: User
 var guest: User
+var record_score: int = 0
 
 
 func _ready() -> void:
@@ -19,6 +20,13 @@ func _ready() -> void:
 	EventManager.leave_lobby_completed.connect(_on_leave_lobby_completed)
 	
 	EventManager.match_started.connect(_on_match_started)
+	EventManager.match_ended.connect(_on_match_ended)
+
+func _on_match_ended(success: bool, error: String) -> void:
+	if success:
+		get_tree().change_scene_to_file("res://ui/menus/lobby/room_create/room_create.tscn")
+	else:
+		printerr("Match ended with error: ", error)
 
 func _on_match_started(success: bool, error: String, udp_token: String, _udp_port: int) -> void:
 	if success:

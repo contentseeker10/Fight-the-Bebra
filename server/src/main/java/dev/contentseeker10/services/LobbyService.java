@@ -23,7 +23,7 @@ public class LobbyService {
 
     public CreateLobbyResponseDTO createLobby(User creator) {
         if (creator == null) {
-            return new CreateLobbyResponseDTO(false, "Bad Request", "");
+            return new CreateLobbyResponseDTO(false, "Bad Request", "", 0);
         }
         creator.setType(UserType.ADMIN);
         String code;
@@ -32,7 +32,7 @@ public class LobbyService {
             code = generateCode();
             lobby = new Lobby(code, creator);
         } while (activeLobbies.putIfAbsent(code, lobby) != null);
-        return new CreateLobbyResponseDTO(true, "", code);
+        return new CreateLobbyResponseDTO(true, "", code, lobby.getRecordScore());
     }
 
     public boolean startGame(String lobbyCode) {
@@ -52,18 +52,18 @@ public class LobbyService {
     public JoinLobbyResponseDTO joinLobby(String lobbyCode, User user) {
         Lobby lobby = activeLobbies.get(lobbyCode);
         if (lobby == null) {
-            return new JoinLobbyResponseDTO(false, "Lobby not found", null);
+            return new JoinLobbyResponseDTO(false, "Lobby not found", null, 0);
         }
         synchronized (lobby) {
             if (lobby.getGuest() != null) {
-                return new JoinLobbyResponseDTO(false, "Room is full", null);
+                return new JoinLobbyResponseDTO(false, "Room is full", null, 0);
             }
             if (lobby.getType() != LobbyType.WAITING) {
-                return new JoinLobbyResponseDTO(false, "Game already started", null);
+                return new JoinLobbyResponseDTO(false, "Game already started", null, 0);
             }
             user.setType(UserType.GUEST);
             lobby.setGuest(user);
-            return new JoinLobbyResponseDTO(true, "", new UserDTO(lobby.getAdmin()));
+            return new JoinLobbyResponseDTO(true, "", new UserDTO(lobby.getAdmin()), lobby.getRecordScore());
         }
     }
 

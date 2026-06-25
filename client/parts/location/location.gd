@@ -9,6 +9,14 @@ var teammate_dir: String = "down"
 var teammate_was_attacking: bool = false
 var send_timer: Timer
 
+var level_timer: Timer
+var time_left: int = 60
+var local_player_score: int = 0
+var teammate_player_score: int = 0
+
+var _timer_label: Label
+var _score_label: Label
+
 func _ready() -> void:
 	_init_players()
 	EventManager.teammate_state_updated.connect(_on_teammate_state_updated)
@@ -18,6 +26,57 @@ func _ready() -> void:
 	send_timer.autostart = true
 	send_timer.timeout.connect(_send_local_state)
 	add_child(send_timer)
+	
+	# Setup Level Timer and Score HUD
+	_timer_label = local_player.get_node("Hud/MarginContainer/LevelTimerLabel")
+	_score_label = local_player.get_node("Hud/MarginContainer/Score")
+	
+	_timer_label.text = str(time_left)
+	_score_label.text = str(0)
+	
+	# Setup HUD Usernames
+	var player_username_label = local_player.get_node("Hud/MarginContainer/VBoxContainer/PlayerInfoContainer/Username") as Label
+	var teammate_username_label = local_player.get_node("Hud/MarginContainer/VBoxContainer/TeammateInfoContainer/Username") as Label
+	player_username_label.text = AccountManager.current_user.username
+	if LobbyManager.guest:
+		if AccountManager.current_user.id == LobbyManager.admin.id:
+			teammate_username_label.text = LobbyManager.guest.username
+		else:
+			teammate_username_label.text = LobbyManager.admin.username
+	else:
+		teammate_username_label.text = "Teammate"
+	
+	level_timer = Timer.new()
+	level_timer.wait_time = 1.0
+	level_timer.autostart = true
+	level_timer.timeout.connect(_on_second_tick)
+	add_child(level_timer)
+
+func _on_second_tick() -> void:
+	if time_left <= 0:
+		return
+		
+	time_left -= 1
+	_timer_label.text = str(time_left)
+	
+	# Award 100 points for each lived second
+	if local_player and not local_player.is_dead:
+		local_player_score += 100
+	if teammate and not teammate.is_dead:
+		teammate_player_score += 100
+		
+	var total_score = local_player_score + teammate_player_score
+	_score_label.text = str(total_score)
+	
+	if time_left == 0:
+		level_timer.stop()
+		# Only admin sends END_GAME request to server
+		if LobbyManager.admin and AccountManager.current_user.id == LobbyManager.admin.id:
+			NetworkManager.send_request(NetworkManager.CommandType.END_GAME, {
+				"lobbyCode": LobbyManager.code,
+				"adminScore": local_player_score,
+				"guestScore": teammate_player_score
+			})
 
 func _init_players() -> void:
 	# Local player
